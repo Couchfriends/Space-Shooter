@@ -1,0 +1,195 @@
+/**
+ * Created by Casmo on 17-6-2015.
+ */
+var SpaceShooter = {
+    settings: {
+        width: 1024,
+        height: 1024,
+        assetsDir: 'src/assets/'
+    },
+    objects: [],
+    score: 0,
+    LightPos: [
+        -.5,
+        0,
+        .5
+    ],
+    update: function (time) {
+        for (var i = 0; i < this.objects.length; i++) {
+            this.objects[i].update(time);
+        }
+    }
+};
+
+/**
+ * Global object class
+ * @constructor
+ */
+SpaceShooter.Element = function () {
+
+    /**
+     * Pixi.js object
+     * @type {{}}
+     */
+    this.object = {};
+
+    /**
+     * The name/type of the object. Used for collision detection
+     * @type {string}
+     */
+    this.name = '';
+
+    /**
+     * Tween object
+     * @type {{}}
+     */
+    this.tween = {};
+
+    /**
+     * Hit area for the object. Can be circle, polygon, react
+     * @type {{}}
+     */
+    this.hitArea = null;
+
+    /**
+     * List of names that can collide with this object. Only one way needed.
+     * @type {Array}
+     */
+    this.collisionList = [];
+
+    this._textureCount = 0;
+
+    /**
+     * List with textures for this object. If this object has multiple textures it will animate (switch) between them
+     * @type {Array}
+     */
+    this.textures = [];
+
+    /**
+     * List with normal map textures for this object. If this object has multiple textures it will animate (switch) between them
+     * @type {Array}
+     */
+    this.texturesNormals = [];
+
+    /**
+     * Aditional tint colors for the object to create variations of the same object
+     * @type {{}}
+     */
+    this.tint = null;
+
+    /**
+     * Size of the object. Will be override by init function. Used for collision detection
+     * @type {{height: number, width: number}}
+     */
+    this.size = {
+        width: 0,
+        height: 0
+    }
+};
+
+SpaceShooter.Element.prototype = {
+
+    init: function () {
+
+        for (var i = 0; i < this.textures.length; i++) {
+            this.textures[i] = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.textures[i]);
+        }
+        this.object = new PIXI.Sprite(this.textures[0]);
+        this.object.anchor.x = 0.5;
+        this.object.anchor.y = 0.5;
+        if (this.hitArea != null) {
+            this.object.hitArea = this.hitArea;
+        }
+        if (this.size.width == 0) {
+            this.size.width = this.object.width;
+        }
+        if (this.size.height == 0) {
+            this.size.height = this.object.height;
+        }
+        if (this.tint != null) {
+            this.object.tint = this.tint;
+        }
+
+    },
+
+    add: function () {
+        SpaceShooter.objects.push(this);
+        if (this.object != null) {
+            stage.addChild(this.object);
+        }
+    },
+
+    remove: function () {
+        if (this.object != null) {
+            stage.removeChild(this.object);
+        }
+        if (this.tween != null) {
+            TWEEN.remove(this.tween);
+        }
+        var indexOf = SpaceShooter.objects.indexOf(this);
+        SpaceShooter.objects.splice(indexOf, 1);
+    },
+
+    /**
+     * Update function in gameloop. Might return false if update is not allowed.
+     * @param time
+     * @returns {boolean}
+     */
+    update: function (time) {
+        if (this.object.visible == false) {
+            return false;
+        }
+        if (this.textures.length > 1 && time%3<1) {
+            // Animate
+            this._textureCount++;
+            if (this._textureCount >= this.textures.length) {
+                this._textureCount = 0;
+            }
+            this.object.texture = this.textures[this._textureCount];
+        }
+    },
+
+    /**
+     * Collision detection
+     */
+    checkCollision: function () {
+        for (var i = 0; i < SpaceShooter.objects.length; i++) {
+            var object = SpaceShooter.objects[i];
+            if (object.name == '' || this.collisionList.indexOf(object.name) < 0) {
+                continue;
+            }
+            if (object.object.hitArea != null) {
+                var x = this.object.position.x - (object.object.position.x - (object.size.width / 2));
+                var y = this.object.position.y - (object.object.position.y - (object.size.height / 2));
+                if (object.object.hitArea.contains(x, y)) {
+                    return object;
+                }
+            }
+            else {
+                // Simple AABB collision detection
+                var xdist = object.object.position.x - this.object.position.x;
+
+                if (xdist > -object.object.width / 2 && xdist < object.object.width / 2) {
+                    var ydist = object.object.position.y - this.object.position.y;
+
+                    if (ydist > -object.object.height / 2 && ydist < object.object.height / 2) {
+                        return object;
+                    }
+                }
+            }
+        }
+        return false;
+    },
+
+    /**
+     * Callback when an object hit this object
+     * @param target
+     */
+    collision: function (target) {
+
+    },
+
+    destroy: function () {
+        this.remove();
+    }
+};

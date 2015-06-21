@@ -1,0 +1,233 @@
+SpaceShooter.Background = function (file) {
+
+    SpaceShooter.Element.call(this);
+
+    this.name = 'background';
+
+    this.textures = [
+        'background-far.jpg'
+    ];
+
+    this.speed = .128;
+
+};
+
+SpaceShooter.Background.prototype = Object.create(SpaceShooter.Element.prototype);
+
+SpaceShooter.Background.prototype.constructor = SpaceShooter.Background;
+
+SpaceShooter.Background.prototype.init = function () {
+
+    var texture = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.textures[0]);
+    this.object = new PIXI.extras.TilingSprite(texture, SpaceShooter.settings.width, SpaceShooter.settings.width);
+
+};
+
+SpaceShooter.Background.prototype.update = function () {
+    this.object.tilePosition.y += this.speed;
+};
+
+SpaceShooter.Star = function () {
+
+    SpaceShooter.Element.call(this);
+    this.name = 'star';
+};
+
+SpaceShooter.Star.prototype = Object.create(SpaceShooter.Element.prototype);
+
+SpaceShooter.Star.prototype.constructor = SpaceShooter.Star;
+
+SpaceShooter.Star.prototype.reset = function () {
+    this.speed = Math.random() * (1.5 - .00001) + .00001;
+    this.radius = Math.random() * 3;
+    this.object.beginFill(0xffffff, Math.random() * 1);
+    this.object.position.x = Math.random() * SpaceShooter.settings.width;
+    this.object.position.y = 0;
+};
+SpaceShooter.Star.prototype.init = function () {
+    this.object = new PIXI.Graphics();
+    this.reset();
+    this.object.drawCircle(this.object.position.x, this.object.position.y, this.radius);
+    this.object.position.y = Math.random() * SpaceShooter.settings.height;
+};
+SpaceShooter.Star.prototype.update = function () {
+    this.object.position.y += this.speed;
+    if (this.object.position.y > SpaceShooter.settings.height) {
+        this.reset();
+    }
+};
+
+SpaceShooter.Explosion = function () {
+
+    SpaceShooter.Element.call(this);
+    this.name = 'explosion';
+};
+
+SpaceShooter.Explosion.prototype = Object.create(SpaceShooter.Element.prototype);
+
+SpaceShooter.Explosion.prototype.constructor = SpaceShooter.Explosion;
+
+SpaceShooter.Explosion.prototype.update = function (time) {
+    if (this.object.visible == false) {
+        return false;
+    }
+    if (this.textures.length > 1 && time % 1.5 < 1) {
+        this._textureCount++;
+        if (this._textureCount >= this.textures.length) {
+            this._textureCount = 0;
+            this.remove();
+        }
+        this.object.texture = this.textures[this._textureCount];
+    }
+};
+
+
+SpaceShooter.ExplosionBasic = function () {
+
+    SpaceShooter.Explosion.call(this);
+
+    this.textures = [
+        'expl1-001.png',
+        'expl1-002.png',
+        'expl1-003.png',
+        'expl1-004.png',
+        'expl1-005.png',
+        'expl1-006.png',
+        'expl1-007.png',
+        'expl1-008.png',
+        'expl1-009.png',
+        'expl1-010.png',
+        'expl1-011.png',
+        'expl1-012.png',
+        'expl1-013.png',
+        'expl1-014.png',
+        'expl1-015.png',
+        'expl1-016.png',
+        'expl1-017.png',
+        'expl1-018.png',
+        'expl1-019.png',
+        'expl1-020.png',
+        'expl1-021.png',
+        'expl1-022.png',
+        'expl1-023.png',
+        'expl1-024.png',
+        'expl1-025.png',
+        'expl1-026.png',
+        'expl1-027.png',
+        'expl1-028.png',
+        'expl1-029.png',
+        'expl1-030.png',
+        'expl1-031.png',
+        'expl1-032.png',
+        'expl1-033.png',
+        'expl1-034.png',
+        'expl1-035.png',
+        'expl1-036.png'
+    ];
+
+    this.init = function () {
+        SpaceShooter.Explosion.prototype.init.call(this);
+        for (var i = 0; i < 150; i++) {
+            var particle = new PIXI.Graphics();
+            particle.beginFill(0xffffff, 1);
+            particle.drawCircle(0, 0, Math.random() * 1.5);
+            particle.speed = {
+                x: Math.random() * 20 - 10,
+                y: Math.random() * 20 - 10,
+                reduceX: .8 + Math.random() * .2,
+                reduceY: .8 + Math.random() * .2
+            };
+            this.object.addChild(particle);
+        }
+    };
+
+};
+
+SpaceShooter.ExplosionBasic.prototype = Object.create(SpaceShooter.Explosion.prototype);
+
+SpaceShooter.ExplosionBasic.prototype.constructor = SpaceShooter.ExplosionBasic;
+
+SpaceShooter.Sparkles = function () {
+
+    SpaceShooter.Element.call(this);
+    this.name = 'sparkles';
+    this.stats = {
+        particlesCount: 100,
+        size: {
+            min: .1,
+            max: 1.5
+        },
+        speed: {
+            x: {
+                min: -10,
+                max: 10
+            },
+            y: {
+                min: -10,
+                max: 10
+            },
+            reduce: {
+                x: {
+                    min: .8,
+                    max: 1
+                },
+                y: {
+                    min: .8,
+                    max: 1
+                }
+            }
+        }
+    };
+};
+SpaceShooter.Sparkles.prototype = Object.create(SpaceShooter.Element.prototype);
+
+SpaceShooter.Sparkles.prototype.constructor = SpaceShooter.Sparkles;
+
+SpaceShooter.Sparkles.prototype.reset = function () {
+    this.object.visible = false;
+    for (var i = 0; i < this.object.children.length; i++) {
+        this.object.children[i].reset();
+    }
+};
+
+SpaceShooter.Sparkles.prototype.init = function () {
+    this.object = new PIXI.Container();
+    this.object.visible = false;
+    for (var i = 0; i < this.stats.particlesCount; i++) {
+        var particle = new PIXI.Graphics();
+        particle.beginFill(0xffffff, 1);
+        particle.drawCircle(0, 0, Math.random() * this.stats.size.max - this.stats.size.min);
+        particle.stats = clone(this.stats);
+        particle.reset = function () {
+            this.position.x = 0;
+            this.position.y = 0;
+            this.alpha = 1;
+            this.speed = {
+                x: getRandom(this.stats.speed.x.min, this.stats.speed.x.max),
+                y: getRandom(this.stats.speed.y.min, this.stats.speed.y.max)
+            };
+            this.speed.reduceX = getRandom(this.stats.speed.reduce.x.min, this.stats.speed.reduce.x.max);
+            this.speed.reduceY = getRandom(this.stats.speed.reduce.y.min, this.stats.speed.reduce.y.max);
+        };
+        particle.reset();
+        this.object.addChild(particle);
+    }
+
+};
+SpaceShooter.Sparkles.prototype.update = function (time) {
+
+    if (this.object.visible == false) {
+        return false;
+    }
+    for (var i = 0; i < this.object.children.length; i++) {
+        this.object.children[i].position.x += this.object.children[i].speed.x;
+        this.object.children[i].position.y += this.object.children[i].speed.y;
+        this.object.children[i].speed.x *= this.object.children[i].speed.reduceX;
+        this.object.children[i].speed.y *= this.object.children[i].speed.reduceY;
+        this.object.children[i].alpha *= .98;
+        if (this.object.children[i].alpha < .2) {
+            this.reset();
+        }
+    }
+
+};
