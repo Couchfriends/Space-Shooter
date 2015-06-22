@@ -31,7 +31,7 @@ SpaceShooter.Bullet.prototype.reset = function () {
     this.object.visible = false;
     this.object.position.x = 0;
     this.object.position.y = 0;
-    this.object.beginFill(0xffffff, 1);
+    this.object.beginFill(0xff0000, 1);
     this.object.drawCircle(this.object.position.x, this.object.position.y, this.radius);
 
 };
@@ -49,29 +49,24 @@ SpaceShooter.Bullet.prototype.shoot = function (x, y) {
         y: this.properties.speed.y
     }
 };
-SpaceShooter.Bullet.prototype.update = function () {
-    if (this.object.visible == false) {
-        return;
-    }
-    this.object.position.y += this.speed.y;
-    this.object.position.x += this.speed.x;
-    // Do some collision detection here
-    var collisionObject = this.checkCollision();
-    if (collisionObject != false || this.object.position.y < 0) {
-        if (collisionObject != false) {
-            this.collision(collisionObject);
+SpaceShooter.Bullet.prototype.update = function (time) {
+    if (false !== SpaceShooter.Element.prototype.update.call(this, time)) {
+        this.object.position.y += this.speed.y;
+        this.object.position.x += this.speed.x;
+        if (this.object.position.y < -5) {
+            this.reset();
         }
-        this.reset();
     }
 };
 SpaceShooter.Bullet.prototype.collision = function (target) {
     if (target.name == 'enemy') {
-        SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, 0xff9900);
+        SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, 0xff0000);
         target.stats.hp -= this.stats.damage;
         if (target.stats.hp < 0) {
             target.destroy();
         }
     }
+    this.reset();
 };
 
 SpaceShooter.Ship = function () {
@@ -84,8 +79,13 @@ SpaceShooter.Ship = function () {
     };
     this.shooting = false;
     this.maxSpeed = 60;
+    this.maxSpeedY = 10;
     this.name = 'ship';
     this.currentTexture = 5;
+    this.collisionList = [
+        'enemy'
+    ];
+
     this.textures = [
         'smallfighter0001.png',
         'smallfighter0002.png',
@@ -130,16 +130,24 @@ SpaceShooter.Ship.prototype.setSpeed = function (x, y) {
     else if (x < -(this.maxSpeed)) {
         x = -(this.maxSpeed);
     }
-    if (y > this.maxSpeed) {
-        y = this.maxSpeed;
+    if (y > this.maxSpeedY) {
+        y = this.maxSpeedY;
     }
-    else if (y < -(this.maxSpeed)) {
-        y = -(this.maxSpeed);
+    else if (y < -(this.maxSpeedY)) {
+        y = -(this.maxSpeedY);
     }
     this.speed = {
         x: x,
         y: y
     }
+};
+
+SpaceShooter.Ship.prototype.collision = function (element) {
+    var halfX = this.object.width / 2;
+    var randomX = getRandom(this.object.position.x - halfX, this.object.position.x + halfX);
+    var halfY = this.object.height / 2;
+    var randomY = getRandom(this.object.position.y - halfY, this.object.position.y + halfY);
+    SpaceShooter.Tools.addHitSparkles(randomX, randomY, this.object.tint);
 };
 
 SpaceShooter.Ship.prototype.update = function () {
@@ -179,6 +187,14 @@ SpaceShooter.Ship.prototype.update = function () {
                 this.bulletCounter = 5;
                 break;
             }
+        }
+    }
+
+    // Do some collision detection here
+    var collisionObject = this.checkCollision();
+    if (collisionObject != false || this.object.position.y < 0) {
+        if (collisionObject != false) {
+            this.collision(collisionObject);
         }
     }
 };

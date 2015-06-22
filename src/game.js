@@ -29,6 +29,7 @@ function update(time) {
 
 COUCHFRIENDS.on('playerJoined', function (data) {
     var playerShip = new SpaceShooter.Ship();
+    playerShip.init();
     playerShip.add();
     var player = {
         ship: playerShip,
@@ -49,6 +50,7 @@ COUCHFRIENDS.on('playerJoined', function (data) {
 
 COUCHFRIENDS.on('playerOrientation', function (data) {
 
+    data.y -= .5;
     for (var i = 0; i < players.length; i++) {
         if (players[i].id == data.id) {
             players[i].ship.setSpeed((data.x * players[i].ship.maxSpeed), (data.y * players[i].ship.maxSpeed));

@@ -29,7 +29,7 @@ SpaceShooter.Tools.init = function (resources) {
         this.explosions.push(explosion);
     }
 
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < 100; i++) {
         var sparkle = new SpaceShooter.Sparkles();
         sparkle.stats = {
             color: 0xffffff,
@@ -94,13 +94,13 @@ SpaceShooter.Tools.addHitSparkles = function (x, y, color) {
  * @param y
  * @returns {boolean}
  */
-SpaceShooter.Tools.addExplosion = function (x, y) {
+SpaceShooter.Tools.addExplosion = function (x, y, color) {
     if (this.explosions[this.explosionsCount].object.visible == true) {
         return false;
     }
     this.explosions[this.explosionsCount].object.position.x = x;
     this.explosions[this.explosionsCount].object.position.y = y;
-    this.explosions[this.explosionsCount].play();
+    this.explosions[this.explosionsCount].play(color);
     this.explosionsCount++;
     if (this.explosionsCount >= this.explosions.length) {
         this.explosionsCount = 0;

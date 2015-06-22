@@ -147,6 +147,11 @@ SpaceShooter.Element.prototype = {
         }
         var indexOf = SpaceShooter.objects.indexOf(this);
         SpaceShooter.objects.splice(indexOf, 1);
+        this.onRemove();
+    },
+
+    onRemove: function() {
+
     },
 
     /**
@@ -172,6 +177,13 @@ SpaceShooter.Element.prototype = {
             }
             this.object.texture = this.textures[this._textureCount];
         }
+
+        // Do some collision detection here
+        var collisionObject = this.checkCollision();
+        if (collisionObject != false) {
+            this.collision(collisionObject);
+            this.reset();
+        }
     },
 
     /**
@@ -184,6 +196,19 @@ SpaceShooter.Element.prototype = {
                 continue;
             }
             if (object.object.hitArea != null) {
+                // Get bounds, not just the center
+                if (this.name == 'player') {
+                    console.log(this);
+                }
+                var minX = this.object.position.x - (object.object.position.x - (this.object.width / 2));
+                var minY = this.object.position.y - (object.object.position.y - (this.object.height / 2));
+
+                var maxX = this.object.position.x - (object.object.position.x + (this.object.width / 2));
+                var maxY = this.object.position.y - (object.object.position.y + (this.object.height / 2));
+                if (object.object.hitArea.contains(minX, minY) || object.object.hitArea.contains(minX, maxY) || object.object.hitArea.contains(maxX, minY) || object.object.hitArea.contains(maxX, maxY)) {
+                    return object;
+                }
+
                 var x = this.object.position.x - (object.object.position.x - (object.size.width / 2));
                 var y = this.object.position.y - (object.object.position.y - (object.size.height / 2));
                 if (object.object.hitArea.contains(x, y)) {

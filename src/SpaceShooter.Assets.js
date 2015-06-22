@@ -38,9 +38,9 @@ SpaceShooter.Star.prototype = Object.create(SpaceShooter.Element.prototype);
 SpaceShooter.Star.prototype.constructor = SpaceShooter.Star;
 
 SpaceShooter.Star.prototype.reset = function () {
-    this.speed = Math.random() * (1.5 - .00001) + .00001;
-    this.radius = Math.random() * 3;
-    this.object.beginFill(0xffffff, Math.random() * 1);
+    this.radius = getRandom(0.5, 2);
+    this.speed = this.radius / 4;//getRandom(0.00001, 1);
+    this.object.beginFill(0xffffff, 1);
     this.object.position.x = Math.random() * SpaceShooter.settings.width;
     this.object.position.y = 0;
 };
@@ -76,11 +76,13 @@ SpaceShooter.Explosion.prototype.reset = function () {
     }
 };
 
-SpaceShooter.Explosion.prototype.play = function() {
+SpaceShooter.Explosion.prototype.play = function(color) {
     this.object.visible = true;
     for (var i = 0; i < this.children.length; i++) {
         this.children[i].object.visible = true;
-
+        if (color != null) {
+            this.children[i].setColor(color);
+        }
         this.children[i].object.position = this.object.position;
     }
 };
@@ -147,19 +149,19 @@ SpaceShooter.Sparkles = function () {
     this.name = 'sparkles';
     this.stats = {
         color: 0xffffff,
-        particlesCount: 100,
+        particlesCount: 50,
         size: {
-            min: .1,
-            max: 1.5
+            min: 2.5,
+            max: 6.5
         },
         speed: {
             x: {
-                min: -10,
-                max: 10
+                min: -8,
+                max: 8
             },
             y: {
-                min: -10,
-                max: 10
+                min: -8,
+                max: 8
             },
             reduce: {
                 x: {
@@ -185,10 +187,10 @@ SpaceShooter.Sparkles.prototype.reset = function () {
     }
 };
 
-// @todo doesn't work
 SpaceShooter.Sparkles.prototype.setColor = function (color) {
     for (var i = 0; i < this.object.children.length; i++) {
         this.object.children[i].beginFill(color, 1);
+        this.object.children[i].drawCircle(0, 0, Math.random() * this.stats.size.max - this.stats.size.min);
     }
 };
 
@@ -202,6 +204,7 @@ SpaceShooter.Sparkles.prototype.init = function () {
         particle.stats = clone(this.stats);
         particle.reset = function () {
             this.beginFill(this.stats.color, 1);
+            this.drawCircle(0, 0, Math.random() * this.stats.size.max - this.stats.size.min);
             this.position.x = 0;
             this.position.y = 0;
             this.alpha = 1;

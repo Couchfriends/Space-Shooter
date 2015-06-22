@@ -4,6 +4,7 @@ SpaceShooter.Enemy = function () {
     this.name = 'enemy';
     this.filter = {};
     this.stats = {
+        color: 0x00ffff,
         hp: 1,
         score: 10
     };
@@ -23,7 +24,7 @@ SpaceShooter.Enemy = function () {
         if (this.object.visible == false) {
             return;
         }
-        SpaceShooter.Tools.addExplosion(this.object.x, this.object.y);
+        SpaceShooter.Tools.addExplosion(this.object.x, this.object.y, this.stats.color);
         SpaceShooter.score += this.stats.score;
         this.remove();
     };
@@ -71,6 +72,7 @@ SpaceShooter.EnemyUfo = function () {
     SpaceShooter.Enemy.call( this );
     this.filter = {};
     this.stats = {
+        color: 0x003eff,
         hp: 5,
         score: 50
     };
