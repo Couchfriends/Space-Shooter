@@ -66,7 +66,7 @@ SpaceShooter.Bullet.prototype.update = function () {
 };
 SpaceShooter.Bullet.prototype.collision = function (target) {
     if (target.name == 'enemy') {
-        addHitSparkles(this.object.position.x, this.object.position.y);
+        SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, 0xff9900);
         target.stats.hp -= this.stats.damage;
         if (target.stats.hp < 0) {
             target.destroy();

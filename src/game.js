@@ -2,7 +2,7 @@
  * Created by Casmo on 17-6-2015.
  */
 window.onload = init;
-var renderer, stage, players = [], testShip, explosionSparkles = [], explosionSparklesCount = 0,hitSparkles = [], hitSparklesCount = 0;
+var renderer, stage, players = [], testShip;
 
 function init() {
     COUCHFRIENDS.settings.host = 'ws.couchfriends.com';
@@ -15,117 +15,9 @@ function init() {
     stage = new PIXI.Container(0x000000);
     document.getElementById('game').innerHTML = '';
     document.getElementById('game').appendChild(renderer.view);
-    var background = new SpaceShooter.Background();
-    background.init();
-    background.add();
-    for (var i = 0; i < 50; i++) {
-        var star = new SpaceShooter.Star();
-        star.init();
-        star.add();
-    }
-    //COUCHFRIENDS.connect();
-    testShip = new SpaceShooter.Ship();
-    testShip.init();
-    testShip.add();
-    window.addEventListener('mousemove', function (e) {
-        testShip.object.position.x = e.clientX;
-        testShip.object.position.y = e.clientY;
-    });
-    window.addEventListener('mousedown', function (e) {
-        testShip.shooting = true;
-    });
-    window.addEventListener('mouseup', function (e) {
-        testShip.shooting = false;
-    });
-    var enemy = new SpaceShooter.EnemyUfo();
-    enemy.init();
-    enemy.tween = new TWEEN.Tween({x: (renderer.width - 100), y: -100})
-        .to({
-            x: [(renderer.width - 100), (renderer.width * .5), (renderer.width * .5)],
-            y: [(renderer.height * .25), -100, (renderer.height + 100)]
-        }, 10000)
-        .onUpdate(function () {
-
-            enemy.object.position.x = this.x;
-            enemy.object.position.y = this.y;
-
-        })
-        .interpolation(TWEEN.Interpolation.Bezier)
-        .repeat(0)
-        .onComplete(function () {
-            enemy.remove();
-        })
-        .start();
-    enemy.add();
-
-    for (var i = 0; i < 15; i++) {
-        var sparkle = new SpaceShooter.Sparkles();
-        sparkle.init();
-        sparkle.add();
-        sparkle.object.visible = false;
-        explosionSparkles.push(sparkle);
-    }
-    for (var i = 0; i < 25; i++) {
-        var sparkle = new SpaceShooter.Sparkles();
-        sparkle.stats = {
-            particlesCount: 5,
-            size: {
-                min: .1,
-                max: .9
-            },
-            speed: {
-                x: {
-                    min: -5,
-                    max: 5
-                },
-                y: {
-                    min: 1,
-                    max: 5
-                },
-                reduce: {
-                    x: {
-                        min: .8,
-                        max: 1
-                    },
-                    y: {
-                        min: .8,
-                        max: 1
-                    }
-                }
-            }
-        };
-        sparkle.init();
-        sparkle.add();
-        sparkle.object.visible = false;
-        hitSparkles.push(sparkle);
-    }
+    var level = new SpaceShooter.Level1();
+    level.start();
     requestAnimationFrame(update);
-}
-
-function addExplosionSparkles(x, y) {
-    if (explosionSparkles[explosionSparklesCount].object.visible == true) {
-        return false;
-    }
-    explosionSparkles[explosionSparklesCount].object.position.x = x;
-    explosionSparkles[explosionSparklesCount].object.position.y = y;
-    explosionSparkles[explosionSparklesCount].object.visible = true;
-    explosionSparklesCount++;
-    if (explosionSparklesCount >= explosionSparkles.length) {
-        explosionSparklesCount = 0;
-    }
-}
-
-function addHitSparkles(x, y) {
-    if (hitSparkles[hitSparklesCount].object.visible == true) {
-        return false;
-    }
-    hitSparkles[hitSparklesCount].object.position.x = x;
-    hitSparkles[hitSparklesCount].object.position.y = y;
-    hitSparkles[hitSparklesCount].object.visible = true;
-    hitSparklesCount++;
-    if (hitSparklesCount >= hitSparkles.length) {
-        hitSparklesCount = 0;
-    }
 }
 
 function update(time) {

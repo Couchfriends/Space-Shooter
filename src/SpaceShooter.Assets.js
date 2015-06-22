@@ -4,9 +4,9 @@ SpaceShooter.Background = function (file) {
 
     this.name = 'background';
 
-    this.textures = [
-        'background-far.jpg'
-    ];
+    //this.textures = [
+    //    'background-far.jpg'
+    //];
 
     this.speed = .128;
 
@@ -16,9 +16,9 @@ SpaceShooter.Background.prototype = Object.create(SpaceShooter.Element.prototype
 
 SpaceShooter.Background.prototype.constructor = SpaceShooter.Background;
 
-SpaceShooter.Background.prototype.init = function () {
+SpaceShooter.Background.prototype.init = function (texture) {
 
-    var texture = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.textures[0]);
+    texture = texture || PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.textures[0]);
     this.object = new PIXI.extras.TilingSprite(texture, SpaceShooter.settings.width, SpaceShooter.settings.width);
 
 };
@@ -61,31 +61,33 @@ SpaceShooter.Explosion = function () {
 
     SpaceShooter.Element.call(this);
     this.name = 'explosion';
+    this.textureSpeed = 1;
+    this.resetAfterLastTexture = true;
 };
 
 SpaceShooter.Explosion.prototype = Object.create(SpaceShooter.Element.prototype);
 
 SpaceShooter.Explosion.prototype.constructor = SpaceShooter.Explosion;
 
-SpaceShooter.Explosion.prototype.update = function (time) {
-    if (this.object.visible == false) {
-        return false;
-    }
-    if (this.textures.length > 1 && time % 1.5 < 1) {
-        this._textureCount++;
-        if (this._textureCount >= this.textures.length) {
-            this._textureCount = 0;
-            this.remove();
-        }
-        this.object.texture = this.textures[this._textureCount];
+SpaceShooter.Explosion.prototype.reset = function () {
+    this.object.visible = false;
+    for (var i = 0; i < this.object.children.length; i++) {
+        this.object.children[i].reset();
     }
 };
 
+SpaceShooter.Explosion.prototype.play = function() {
+    this.object.visible = true;
+    for (var i = 0; i < this.children.length; i++) {
+        this.children[i].object.visible = true;
+
+        this.children[i].object.position = this.object.position;
+    }
+};
 
 SpaceShooter.ExplosionBasic = function () {
 
     SpaceShooter.Explosion.call(this);
-
     this.textures = [
         'expl1-001.png',
         'expl1-002.png',
@@ -124,21 +126,13 @@ SpaceShooter.ExplosionBasic = function () {
         'expl1-035.png',
         'expl1-036.png'
     ];
-
-    this.init = function () {
-        SpaceShooter.Explosion.prototype.init.call(this);
-        for (var i = 0; i < 150; i++) {
-            var particle = new PIXI.Graphics();
-            particle.beginFill(0xffffff, 1);
-            particle.drawCircle(0, 0, Math.random() * 1.5);
-            particle.speed = {
-                x: Math.random() * 20 - 10,
-                y: Math.random() * 20 - 10,
-                reduceX: .8 + Math.random() * .2,
-                reduceY: .8 + Math.random() * .2
-            };
-            this.object.addChild(particle);
-        }
+    this.init = function (textures) {
+        SpaceShooter.Explosion.prototype.init.call(this, textures);
+        var sparkle = new SpaceShooter.Sparkles();
+        sparkle.init();
+        sparkle.add();
+        sparkle.object.visible = false;
+        this.addChild(sparkle);
     };
 
 };
@@ -152,6 +146,7 @@ SpaceShooter.Sparkles = function () {
     SpaceShooter.Element.call(this);
     this.name = 'sparkles';
     this.stats = {
+        color: 0xffffff,
         particlesCount: 100,
         size: {
             min: .1,
@@ -190,6 +185,13 @@ SpaceShooter.Sparkles.prototype.reset = function () {
     }
 };
 
+// @todo doesn't work
+SpaceShooter.Sparkles.prototype.setColor = function (color) {
+    for (var i = 0; i < this.object.children.length; i++) {
+        this.object.children[i].beginFill(color, 1);
+    }
+};
+
 SpaceShooter.Sparkles.prototype.init = function () {
     this.object = new PIXI.Container();
     this.object.visible = false;
@@ -199,6 +201,7 @@ SpaceShooter.Sparkles.prototype.init = function () {
         particle.drawCircle(0, 0, Math.random() * this.stats.size.max - this.stats.size.min);
         particle.stats = clone(this.stats);
         particle.reset = function () {
+            this.beginFill(this.stats.color, 1);
             this.position.x = 0;
             this.position.y = 0;
             this.alpha = 1;

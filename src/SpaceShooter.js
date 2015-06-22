@@ -33,6 +33,8 @@ SpaceShooter.Element = function () {
      */
     this.object = {};
 
+    this.children = []; // Child objects
+
     /**
      * The name/type of the object. Used for collision detection
      * @type {string}
@@ -65,6 +67,10 @@ SpaceShooter.Element = function () {
      */
     this.textures = [];
 
+    this.textureSpeed = 3;
+
+    this.resetAfterLastTexture = false;
+
     /**
      * List with normal map textures for this object. If this object has multiple textures it will animate (switch) between them
      * @type {Array}
@@ -89,10 +95,15 @@ SpaceShooter.Element = function () {
 
 SpaceShooter.Element.prototype = {
 
-    init: function () {
+    init: function (textures) {
 
-        for (var i = 0; i < this.textures.length; i++) {
-            this.textures[i] = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.textures[i]);
+        if (textures == null) {
+            for (var i = 0; i < this.textures.length; i++) {
+                this.textures[i] = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.textures[i]);
+            }
+        }
+        else {
+            this.textures = textures;
         }
         this.object = new PIXI.Sprite(this.textures[0]);
         this.object.anchor.x = 0.5;
@@ -112,11 +123,19 @@ SpaceShooter.Element.prototype = {
 
     },
 
+    reset: function() {
+
+    },
+
     add: function () {
         SpaceShooter.objects.push(this);
         if (this.object != null) {
             stage.addChild(this.object);
         }
+    },
+
+    addChild: function (element) {
+        this.children.push(element);
     },
 
     remove: function () {
@@ -139,11 +158,17 @@ SpaceShooter.Element.prototype = {
         if (this.object.visible == false) {
             return false;
         }
-        if (this.textures.length > 1 && time%3<1) {
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i].update();
+        }
+        if (this.textures.length > 1 && time%this.textureSpeed<1) {
             // Animate
             this._textureCount++;
             if (this._textureCount >= this.textures.length) {
                 this._textureCount = 0;
+                if (this.resetAfterLastTexture == true) {
+                    this.reset();
+                }
             }
             this.object.texture = this.textures[this._textureCount];
         }

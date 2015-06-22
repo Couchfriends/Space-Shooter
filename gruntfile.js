@@ -15,6 +15,8 @@ module.exports = function(grunt) {
                     'src/SpaceShooter.Player.js',
                     'src/SpaceShooter.Assets.js',
                     'src/SpaceShooter.Enemies.js',
+                    'src/SpaceShooter.Levels.js',
+                    'src/SpaceShooter.Tools.js',
                     'src/game.js'
                 ],
                 dest: 'build/game.js'
