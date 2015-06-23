@@ -5,7 +5,7 @@ var SpaceShooter = {
     settings: {
         width: 1024,
         height: 1024,
-        assetsDir: 'src/assets/'
+        assetsDir: 'assets/'
     },
     objects: [],
     scoreCurrency: '', // Prefix for score. e.g. € or $
