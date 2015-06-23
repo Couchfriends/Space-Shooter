@@ -33,9 +33,9 @@ SpaceShooter.Tools.init = function (resources) {
         var sparkle = new SpaceShooter.Sparkles();
         sparkle.stats = {
             color: 0xffffff,
-            particlesCount: 3,
+            particlesCount: 2,
             size: {
-                min: 1.6,
+                min: 2.6,
                 max: 4.8
             },
             speed: {

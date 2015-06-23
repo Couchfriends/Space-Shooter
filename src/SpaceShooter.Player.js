@@ -61,10 +61,7 @@ SpaceShooter.Bullet.prototype.update = function (time) {
 SpaceShooter.Bullet.prototype.collision = function (target) {
     if (target.name == 'enemy') {
         SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, 0xff0000);
-        target.stats.hp -= this.stats.damage;
-        if (target.stats.hp < 0) {
-            target.destroy();
-        }
+        target.damage(this.stats.damage);
     }
     this.reset();
 };
@@ -72,7 +69,7 @@ SpaceShooter.Bullet.prototype.collision = function (target) {
 SpaceShooter.Ship = function () {
 
     SpaceShooter.Element.call(this);
-
+    this.playerId = 0;
     this.speed = {
         x: 0,
         y: 0
@@ -80,11 +77,18 @@ SpaceShooter.Ship = function () {
     this.shooting = false;
     this.maxSpeed = 60;
     this.maxSpeedY = 10;
-    this.name = 'ship';
+    this.stats = {
+        score: 0,
+        hp: 50,
+        damage: 5
+    };
+    this.name = 'ship'; // initial name so enemies can't hit it. Will be 'ship'
+    //this.hitArea = new PIXI.Rectangle(0,0,55,135);
+    this.imuumCountdown = 300;
     this.currentTexture = 5;
-    this.collisionList = [
-        'enemy'
-    ];
+    //this.collisionList = [
+    //    'enemy'
+    //];
 
     this.textures = [
         'smallfighter0001.png',
@@ -100,9 +104,8 @@ SpaceShooter.Ship = function () {
         'smallfighter0011.png'
     ];
     this.textureSpeed = (this.maxSpeed * 2) / this.textures.length;
-    this.tint = '#' + '0123456789abcdef'.split('').map(function (v, i, a) {
-        return i > 5 ? null : a[Math.floor(Math.random() * 16)]
-    }).join('');
+    this.tint = randomColor({luminosity: 'light'}).replace(/#/, '0x');
+    this.originalTint = this.tint;
 
     this.bullets = [];
     this.bulletCounter = 5;
@@ -120,7 +123,8 @@ SpaceShooter.Ship.prototype.constructor = SpaceShooter.Ship;
 
 SpaceShooter.Ship.prototype.init = function () {
     SpaceShooter.Element.prototype.init.call(this);
-    this.object.tint = this.tint.replace(/#/, '0x');
+    this.object.tint = this.tint;
+    this.object.zIndex = 11;
 };
 
 SpaceShooter.Ship.prototype.setSpeed = function (x, y) {
@@ -143,6 +147,16 @@ SpaceShooter.Ship.prototype.setSpeed = function (x, y) {
 };
 
 SpaceShooter.Ship.prototype.collision = function (element) {
+    if (this.imuumCountdown <= 0 && element.stats != null && element.stats.damage != null) {
+        this.stats.hp -= element.stats.damage;
+    }
+    if (element.stats != null && element.stats.hp != null) {
+        element.damage(this.stats.damage);
+    }
+    if (this.stats.hp <= 0) {
+        this.died();
+        return;
+    }
     var halfX = this.object.width / 2;
     var randomX = getRandom(this.object.position.x - halfX, this.object.position.x + halfX);
     var halfY = this.object.height / 2;
@@ -150,9 +164,43 @@ SpaceShooter.Ship.prototype.collision = function (element) {
     SpaceShooter.Tools.addHitSparkles(randomX, randomY, this.object.tint);
 };
 
+/**
+ * Player died
+ */
+SpaceShooter.Ship.prototype.died = function () {
+
+    this.name = 'ship';
+    this.tint = this.originalTint;
+    this.imuumCountdown = 300;
+    this.stats.hp = 50;
+    SpaceShooter.Tools.addExplosion(this.object.position.x, this.object.position.y, this.object.tint);
+    this.object.position.x = renderer.width / 2;
+    this.object.position.y = renderer.height - this.object.height - 20;
+    this.speed.x = 0;
+    this.speed.y = 0;
+    vibrate(this.playerId, 600); // 36 frames on 60fps
+    SpaceShooter.removeLife();
+
+};
+
 SpaceShooter.Ship.prototype.update = function () {
-    this.object.position.x += this.speed.x;
+    if (this.object.visible == false) {
+        return;
+    }
+    if (this.imuumCountdown > 0) {
+        this.imuumCountdown--;
+        if (this.imuumCountdown%20<10) {
+            this.object.tint = 0x000000;
+        }
+        else {
+            this.object.tint = this.originalTint;
+        }
+        if (this.imuumCountdown <= 0) {
+            this.object.tint = this.originalTint;
+        }
+    }
     this.object.position.y += this.speed.y;
+    this.object.position.x += this.speed.x;
     if (this.object.position.x < 0) {
         this.object.position.x = 0;
     }
@@ -178,14 +226,13 @@ SpaceShooter.Ship.prototype.update = function () {
     }
     if (this.shooting == true) {
         this.bulletCounter--;
-        if (this.bulletCounter > 0) {
-            return;
-        }
-        for (var i = 0; i < this.bullets.length; i++) {
-            if (!this.bullets[i].object.visible) {
-                this.bullets[i].shoot(this.object.position.x, this.object.position.y);
-                this.bulletCounter = 5;
-                break;
+        if (this.bulletCounter <= 0) {
+            for (var i = 0; i < this.bullets.length; i++) {
+                if (!this.bullets[i].object.visible) {
+                    this.bullets[i].shoot(this.object.position.x, this.object.position.y);
+                    this.bulletCounter = 5;
+                    break;
+                }
             }
         }
     }

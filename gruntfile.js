@@ -11,6 +11,7 @@ module.exports = function(grunt) {
                 src: [
                     'src/pixi.js',
                     'src/tween.js',
+                    'src/randomcolor.js',
                     'src/SpaceShooter.js',
                     'src/SpaceShooter.Player.js',
                     'src/SpaceShooter.Assets.js',

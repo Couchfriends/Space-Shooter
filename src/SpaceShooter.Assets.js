@@ -20,6 +20,7 @@ SpaceShooter.Background.prototype.init = function (texture) {
 
     texture = texture || PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.textures[0]);
     this.object = new PIXI.extras.TilingSprite(texture, SpaceShooter.settings.width, SpaceShooter.settings.width);
+    this.object.zIndex = 1;
 
 };
 
@@ -43,6 +44,7 @@ SpaceShooter.Star.prototype.reset = function () {
     this.object.beginFill(0xffffff, 1);
     this.object.position.x = Math.random() * SpaceShooter.settings.width;
     this.object.position.y = 0;
+    this.object.zIndex = 2;
 };
 SpaceShooter.Star.prototype.init = function () {
     this.object = new PIXI.Graphics();
@@ -76,7 +78,7 @@ SpaceShooter.Explosion.prototype.reset = function () {
     }
 };
 
-SpaceShooter.Explosion.prototype.play = function(color) {
+SpaceShooter.Explosion.prototype.play = function (color) {
     this.object.visible = true;
     for (var i = 0; i < this.children.length; i++) {
         this.children[i].object.visible = true;
@@ -152,7 +154,7 @@ SpaceShooter.Sparkles = function () {
         particlesCount: 50,
         size: {
             min: 2.5,
-            max: 6.5
+            max: 3.5
         },
         speed: {
             x: {
@@ -236,4 +238,63 @@ SpaceShooter.Sparkles.prototype.update = function (time) {
         }
     }
 
+};
+
+SpaceShooter.Text = function () {
+
+    SpaceShooter.Element.call(this);
+    this.name = 'font';
+    this.text = '';
+    this.font = 'bold 60px Arial';
+    this.fill = '#ff9900';
+    this.align = 'center';
+    this.stroke = '#ffffff';
+    this.strokeThickness = 6;
+};
+SpaceShooter.Text.prototype = Object.create(SpaceShooter.Element.prototype);
+
+SpaceShooter.Text.prototype.constructor = SpaceShooter.Text;
+
+SpaceShooter.Text.prototype.init = function() {
+    this.object = new PIXI.Text(this.text, {
+        font: this.font,
+        fill: this.fill,
+        align: this.align,
+        stroke: this.stroke,
+        strokeThickness: this.strokeThickness
+    });
+    this.object.anchor.x = 1;
+    this.object.anchor.y = 0;
+    this.object.zIndex = 99;
+};
+
+
+SpaceShooter.TextScore = function () {
+
+    SpaceShooter.Text.call(this);
+    this.displayScore = -1;
+    this.name = 'font';
+    this.text = '';
+    this.font = 'bold 30px Arial';
+    this.fill = '#000000';
+    this.align = 'right';
+    this.stroke = '#ffffff';
+    this.strokeThickness = 3;
+};
+SpaceShooter.TextScore.prototype = Object.create(SpaceShooter.Text.prototype);
+
+SpaceShooter.TextScore.prototype.constructor = SpaceShooter.TextScore;
+
+SpaceShooter.TextScore.prototype.update = function(time) {
+    SpaceShooter.Text.prototype.update.call(this, time);
+    if (this.displayScore == SpaceShooter.score) {
+        return;
+    }
+    if (this.displayScore < SpaceShooter.score) {
+        this.displayScore++;
+    }
+    else {
+        this.displayScore--;
+    }
+    this.object.text = SpaceShooter.scoreCurrency + ' ' + this.displayScore;
 };

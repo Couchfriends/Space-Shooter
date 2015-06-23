@@ -22,8 +22,8 @@ SpaceShooter.Level = function () {
 
     this.maxElements = 25;
     this.spawnFrequency = 250; // Per how much frames?
-    this.elementsPerPlayer = .75; // The lower the faster the spawn rate
-    this.nextElementPerScore = 1000; // Difficulty increased per this score
+    this.elementsPerPlayer = .75; // The lower the faster the spawn rate. Must be less then one
+    this.nextDifficultyIncreased = 500; // Difficulty increased per this score
     this._spawnCounter = 0;
     this._nextSpawn = 150;
     this._elementsSpawned = 0;
@@ -46,20 +46,6 @@ SpaceShooter.Level.prototype.start = function () {
     });
     loader.load(function (loader, resources) {
         loader.level.resources = resources;
-        /*
-         PIXI.loader
-         // add resources
-         .add('name1', 'url/to/resource1.png')
-         .add('name2', 'url/to/resource2.json')
-         // listen for progress
-         .on('progress', onProgressCallback)
-         // load resources
-         .load(function (loader, resources) {
-         // resources is an object containing the loaded resources, keyed by the names you used above.
-
-         var sprite = new PIXI.Sprite(resources.name1.texture);
-         });
-         */
         loader.level.play();
         SpaceShooter.objects.push(loader.level);
         SpaceShooter.Tools.init(resources);
@@ -87,6 +73,9 @@ SpaceShooter.Level.prototype.play = function () {
  */
 SpaceShooter.Level.prototype.spawnElement = function() {
 
+    if (players.length == -1) { // Make 0 on end
+        return;
+    }
     this._elementsSpawned++;
     var enemy = new SpaceShooter.EnemyUfo();
     enemy.level = this;
@@ -168,7 +157,21 @@ SpaceShooter.Level1.prototype.play = function () {
         star.init();
         star.add();
     }
-    COUCHFRIENDS.connect();
+    //COUCHFRIENDS.connect();
+    var x = 20;
+    var dudeTexture = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + 'life.png');
+    for (var i = 0; i < SpaceShooter.lives; i++) {
+        var life = new PIXI.Sprite(dudeTexture);
+        life.position.y = 20;
+        life.position.x = x;
+        life.zIndex = 99;
+        life.anchor.x = 0;
+        life.anchor.y = 0;
+        SpaceShooter.lifeDudes.push(life);
+        x += 26;
+        stage.addChild(life);
+
+    }
     testShip = new SpaceShooter.Ship();
     testShip.init();
     testShip.add();
@@ -183,25 +186,12 @@ SpaceShooter.Level1.prototype.play = function () {
         testShip.shooting = false;
     });
 
-    //var enemy = new SpaceShooter.EnemyUfo();
-    //enemy.init();
-    //enemy.tween = new TWEEN.Tween({x: (renderer.width - 500), y: -50})
-    //    .to({
-    //        x: [(renderer.width - 500), (renderer.width * .5), (renderer.width * .5)],
-    //        y: [(renderer.height * .25), -100, (renderer.height + 100)]
-    //    }, 10000)
-    //    .onUpdate(function (p, tween) {
-    //        tween.parent.object.position.x = this.x;
-    //        tween.parent.object.position.y = this.y;
-    //
-    //    })
-    //    .interpolation(TWEEN.Interpolation.Bezier)
-    //    .repeat(0)
-    //    .onComplete(function (tween) {
-    //        tween.parent.remove();
-    //    })
-    //    .start();
-    //enemy.tween.parent = enemy;
-    //enemy.add();
+    var score = new SpaceShooter.TextScore();
+    score.init();
+    score.object.position.x = renderer.width - 20;
+    score.object.position.y = 20;
+    score.add();
+
+    stage.updateLayersOrder();
 
 };

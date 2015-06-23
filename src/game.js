@@ -13,10 +13,18 @@ function init() {
     SpaceShooter.settings.height = h;
     renderer = new PIXI.autoDetectRenderer(w, h);
     stage = new PIXI.Container(0x000000);
+    stage.updateLayersOrder = function () {
+        stage.children.sort(function(a,b) {
+            a.zIndex = a.zIndex || 11; // 0-10 is for backgrounds
+            b.zIndex = b.zIndex || 11; // 0-10 is for backgrounds
+            return a.zIndex - b.zIndex
+        });
+    };
     document.getElementById('game').innerHTML = '';
     document.getElementById('game').appendChild(renderer.view);
     var level = new SpaceShooter.Level1();
     level.start();
+    stage.updateLayersOrder();
     requestAnimationFrame(update);
 }
 
@@ -32,9 +40,11 @@ COUCHFRIENDS.on('playerJoined', function (data) {
     playerShip.init();
     playerShip.add();
     var player = {
+        id: data.id,
         ship: playerShip,
-        id: data.id
+        score: 0
     };
+    playerShip.playerId = data.id;
     players.push(player);
 
     var jsonData = {
@@ -42,15 +52,16 @@ COUCHFRIENDS.on('playerJoined', function (data) {
         action: 'identify',
         data: {
             id: data.id,
-            color: playerShip.tint
+            color: playerShip.tint.replace('0x', '#')
         }
     };
     COUCHFRIENDS.send(jsonData);
+    stage.updateLayersOrder();
 });
 
 COUCHFRIENDS.on('playerOrientation', function (data) {
 
-    data.y -= .5;
+    //data.y -= .5;
     for (var i = 0; i < players.length; i++) {
         if (players[i].id == data.id) {
             players[i].ship.setSpeed((data.x * players[i].ship.maxSpeed), (data.y * players[i].ship.maxSpeed));
@@ -112,6 +123,19 @@ COUCHFRIENDS.on('connect', function () {
     };
     COUCHFRIENDS.send(jsonData);
 });
+
+function vibrate(playerId, duration) {
+    duration = duration || 200;
+    var jsonData = {
+        topic: 'interface',
+        action: 'vibrate',
+        data: {
+            playerId: playerId,
+            duration: duration
+        }
+    };
+    COUCHFRIENDS.send(jsonData);
+}
 
 // Move extern.
 function getRandom(min, max) {

@@ -8,7 +8,10 @@ var SpaceShooter = {
         assetsDir: 'src/assets/'
     },
     objects: [],
+    scoreCurrency: '', // Prefix for score. e.g. € or $
     score: 0,
+    lives: 5,
+    lifeDudes: [],
     LightPos: [
         -.5,
         0,
@@ -17,6 +20,27 @@ var SpaceShooter = {
     update: function (time) {
         for (var i = 0; i < this.objects.length; i++) {
             this.objects[i].update(time);
+        }
+    },
+
+    addScore: function (score, x, y) {
+        this.score += score;
+        if (x != null && y != null) {
+            // Spawn text
+        }
+    },
+    removeLife: function() {
+        // Remove life and reset everything if lives < 0
+        this.lives--;
+        if (this.lives < 0) {
+            this.score = 0;
+            this.lives = 5;
+            for (var i = 0; i < this.lifeDudes.length; i++) {
+                this.lifeDudes[i].visible = true;
+            }
+        }
+        else {
+            this.lifeDudes[this.lives].visible = false;
         }
     }
 };
@@ -190,6 +214,9 @@ SpaceShooter.Element.prototype = {
      * Collision detection
      */
     checkCollision: function () {
+        if (this.collisionList.length == 0) {
+            return false;
+        }
         for (var i = 0; i < SpaceShooter.objects.length; i++) {
             var object = SpaceShooter.objects[i];
             if (object.name == '' || this.collisionList.indexOf(object.name) < 0) {
@@ -197,9 +224,6 @@ SpaceShooter.Element.prototype = {
             }
             if (object.object.hitArea != null) {
                 // Get bounds, not just the center
-                if (this.name == 'player') {
-                    console.log(this);
-                }
                 var minX = this.object.position.x - (object.object.position.x - (this.object.width / 2));
                 var minY = this.object.position.y - (object.object.position.y - (this.object.height / 2));
 
@@ -219,10 +243,10 @@ SpaceShooter.Element.prototype = {
                 // Simple AABB collision detection
                 var xdist = object.object.position.x - this.object.position.x;
 
-                if (xdist > -object.object.width / 2 && xdist < object.object.width / 2) {
+                if (xdist > -(object.object.width+this.object.width) / 2 && xdist < (object.object.width+this.object.width) / 2) {
                     var ydist = object.object.position.y - this.object.position.y;
 
-                    if (ydist > -object.object.height / 2 && ydist < object.object.height / 2) {
+                    if (ydist > -(object.object.height+this.object.height) / 2 && ydist < (object.object.height+this.object.height) / 2) {
                         return object;
                     }
                 }

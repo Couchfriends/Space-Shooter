@@ -6,12 +6,16 @@ SpaceShooter.Enemy = function () {
     this.stats = {
         color: 0x00ffff,
         hp: 1,
-        score: 10
+        score: 10,
+        damage: 5
     };
     this.size = {
         width: 512,
         height: 512
     };
+    this.collisionList = [
+        'ship'
+    ];
 
     this.init = function () {
         SpaceShooter.Element.prototype.init.call(this);
@@ -25,7 +29,7 @@ SpaceShooter.Enemy = function () {
             return;
         }
         SpaceShooter.Tools.addExplosion(this.object.x, this.object.y, this.stats.color);
-        SpaceShooter.score += this.stats.score;
+        SpaceShooter.addScore(this.stats.score, this.object.x, this.object.y);
         this.remove();
     };
 
@@ -34,6 +38,18 @@ SpaceShooter.Enemy = function () {
 SpaceShooter.Enemy.prototype = Object.create( SpaceShooter.Element.prototype );
 
 SpaceShooter.Enemy.prototype.constructor = SpaceShooter.Enemy;
+
+SpaceShooter.Enemy.prototype.collision = function(element) {
+    if (element.name == 'ship') {
+        element.collision(this);
+    }
+};
+SpaceShooter.Enemy.prototype.damage = function(damage) {
+    this.stats.hp -= damage;
+    if (this.stats.hp < 0) {
+        this.destroy();
+    }
+};
 
 SpaceShooter.EnemyBigShip = function () {
 
@@ -74,13 +90,14 @@ SpaceShooter.EnemyUfo = function () {
     this.stats = {
         color: 0x003eff,
         hp: 5,
-        score: 50
+        score: 50,
+        damage: 5
     };
     this.hitArea = new PIXI.Circle(0,0,36);
 
     this.size = {
-        width: 12,
-        height: 12
+        width: 36,
+        height: 36
     };
 
     this.textures = [
