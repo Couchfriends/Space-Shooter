@@ -23,7 +23,10 @@ SpaceShooter.Level = function () {
     this.maxElements = 25;
     this.spawnFrequency = 250; // Per how much frames?
     this.elementsPerPlayer = .75; // The lower the faster the spawn rate. Must be less then one
-    this.nextDifficultyIncreased = 500; // Difficulty increased per this score
+    this.nextDifficultyIncreased = 250; // Difficulty increased per this score
+    this.difficultyIncreaseMultipler = 2.1;
+    this.difficultNumber = 1;
+    this.maxDifficultNumber = 7;
     this._spawnCounter = 0;
     this._nextSpawn = 150;
     this._elementsSpawned = 0;
@@ -77,41 +80,126 @@ SpaceShooter.Level.prototype.spawnElement = function() {
         return;
     }
     this._elementsSpawned++;
-    var enemy = new SpaceShooter.EnemyUfo();
-    enemy.level = this;
-    var startX = 100 + (Math.random() * (renderer.width - 200));
-    var endX = 100 + (Math.random() * (renderer.width - 200));
-    enemy.init();
-    enemy.object.position.x = startX;
-    enemy.object.position.y = -100;
-    enemy.tween = new TWEEN.Tween({x: startX, y: -100})
-        .to({
-            x: [startX, endX, endX],
-            y: [(renderer.height * .25), -100, (renderer.height + 100)]
-        }, 10000)
-        .onUpdate(function (p, tween) {
-            tween.element.object.position.x = this.x;
-            tween.element.object.position.y = this.y;
+    if (this.difficultNumber >= 1 && this.difficultNumber <= 3 || this.difficultNumber > this.maxDifficultNumber) {
+        var enemy = new SpaceShooter.EnemyAsteroid();
+        var startX = 100 + (Math.random() * (renderer.width - 200));
+        var endX = startX;
+        enemy.init();
+        enemy.stats.hp += this.difficultNumber;
+        enemy.stats.score += (this.difficultNumber * 10);
+        enemy.object.position.x = startX;
+        enemy.object.position.y = -100;
+        enemy.rotationSpeed = getRandom(-.02, .02);
+        enemy.tween = new TWEEN.Tween({x: startX, y: -100})
+            .to({
+                x: endX,
+                y: (renderer.height + 100)
+            }, 12000)
+            .onUpdate(function (p, tween) {
+                tween.element.object.position.x = this.x;
+                tween.element.object.position.y = this.y;
+                tween.element.object.rotation += tween.element.rotationSpeed;
 
-        })
-        .interpolation(TWEEN.Interpolation.Bezier)
-        .repeat(0)
-        .onComplete(function (tween) {
-            tween.element.tween = null; // Is already gone in TWEEN
-            tween.element.remove();
-        })
-        .start();
-    enemy.tween.element = enemy;
-    enemy.add();
-    enemy.onRemove = function() {
-        var indexOf = this.level.elements.indexOf(this);
-        this.level.elements.splice(indexOf, 1);
-    };
-    this.elements.push(enemy);
+            })
+            .onComplete(function (tween) {
+                tween.element.tween = null; // Is already gone in TWEEN
+                tween.element.remove();
+            })
+            .start();
+        enemy.tween.element = enemy;
+        enemy.add();
+        enemy.onRemove = function () {
+            var indexOf = this.level.elements.indexOf(this);
+            this.level.elements.splice(indexOf, 1);
+        };
+        enemy.level = this;
+        this.elements.push(enemy);
+    }
+    if (this.difficultNumber >= 3 && this.difficultNumber <= 5 || this.difficultNumber > this.maxDifficultNumber) {
+        var enemy = new SpaceShooter.EnemyUfo();
+        var startX = 100 + (Math.random() * (renderer.width - 200));
+        var endX = 100 + (Math.random() * (renderer.width - 200));
+        enemy.init();
+        enemy.stats.hp += this.difficultNumber;
+        enemy.stats.score += (this.difficultNumber * 10);
+        enemy.object.position.x = startX;
+        enemy.object.position.y = -100;
+        enemy.rotationSpeed = getRandom(-.025, .025);
+        enemy.tween = new TWEEN.Tween({x: startX, y: -100})
+            .to({
+                x: [startX, endX, endX],
+                y: [(renderer.height * .25), -100, (renderer.height + 100)]
+            }, 15000)
+            .onUpdate(function (p, tween) {
+                tween.element.object.position.x = this.x;
+                tween.element.object.position.y = this.y;
+                tween.element.object.rotation += tween.element.rotationSpeed;
+
+            })
+            .interpolation(TWEEN.Interpolation.Bezier)
+            .onComplete(function (tween) {
+                tween.element.tween = null; // Is already gone in TWEEN
+                tween.element.remove(); // We should reset it instead of creating a new one
+            })
+            .start();
+        enemy.tween.element = enemy;
+        enemy.add();
+        enemy.onRemove = function () {
+            var indexOf = this.level.elements.indexOf(this);
+            this.level.elements.splice(indexOf, 1);
+        };
+        enemy.level = this;
+        this.elements.push(enemy);
+    }
+    if (this.difficultNumber >= 5 && this.difficultNumber <= 7 || this.difficultNumber > this.maxDifficultNumber) {
+        var enemy = new SpaceShooter.EnemyUfo();
+        enemy.stats.color = 0xff0000;
+        var startX = 100 + (Math.random() * (renderer.width - 200));
+        var endX = 100 + (Math.random() * (renderer.width - 200));
+        enemy.bulletCounter = 100;
+        enemy.stats.hp = 10;
+        enemy.stats.score = 125;
+        enemy.stats.hp += this.difficultNumber;
+        enemy.stats.score += (this.difficultNumber * 10);
+        enemy.init();
+        enemy.object.position.x = startX;
+        enemy.object.position.y = -100;
+        enemy.object.tint = 0xff0000;
+        enemy.rotationSpeed = getRandom(-.025, .025);
+        enemy.tween = new TWEEN.Tween({x: startX, y: -100})
+            .to({
+                x: [startX, endX, endX],
+                y: [(renderer.height * .25), -100, (renderer.height + 100)]
+            }, 20000)
+            .onUpdate(function (p, tween) {
+                tween.element.object.position.x = this.x;
+                tween.element.object.position.y = this.y;
+                tween.element.object.rotation += tween.element.rotationSpeed;
+
+            })
+            .interpolation(TWEEN.Interpolation.Bezier)
+            .onComplete(function (tween) {
+                tween.element.tween = null; // Is already gone in TWEEN
+                tween.element.remove(); // We should reset it instead of creating a new one
+            })
+            .start();
+        enemy.tween.element = enemy;
+        enemy.add();
+        enemy.onRemove = function () {
+            var indexOf = this.level.elements.indexOf(this);
+            this.level.elements.splice(indexOf, 1);
+        };
+        enemy.level = this;
+        this.elements.push(enemy);
+    }
     // Calculate the next spawn based on score, number of players
     this._nextSpawn = this.spawnFrequency;
     for (var i = 0; i < players.length; i++) {
         this._nextSpawn *= this.elementsPerPlayer;
+    }
+    if (SpaceShooter.score >= this.nextDifficultyIncreased) {
+        this.nextDifficultyIncreased *= this.difficultyIncreaseMultipler;
+        this.difficultNumber++;
     }
 };
 
@@ -175,6 +263,11 @@ SpaceShooter.Level1.prototype.play = function () {
     testShip = new SpaceShooter.Ship();
     testShip.init();
     testShip.add();
+    var player = {
+        id: 0,
+        ship: testShip
+    };
+    players.push(player);
     window.addEventListener('mousemove', function (e) {
         testShip.object.position.x = e.clientX;
         testShip.object.position.y = e.clientY;

@@ -1,4 +1,4 @@
-SpaceShooter.Bullet = function () {
+SpaceShooter.Bullet = function (color) {
 
     SpaceShooter.Element.call(this);
     this.name = 'bullet';
@@ -15,6 +15,7 @@ SpaceShooter.Bullet = function () {
             y: -20
         }
     };
+    this.color = color || 0xff0000;
     this.radius = 5;
 };
 
@@ -31,7 +32,7 @@ SpaceShooter.Bullet.prototype.reset = function () {
     this.object.visible = false;
     this.object.position.x = 0;
     this.object.position.y = 0;
-    this.object.beginFill(0xff0000, 1);
+    this.object.beginFill(this.color, 1);
     this.object.drawCircle(this.object.position.x, this.object.position.y, this.radius);
 
 };
@@ -53,19 +54,48 @@ SpaceShooter.Bullet.prototype.update = function (time) {
     if (false !== SpaceShooter.Element.prototype.update.call(this, time)) {
         this.object.position.y += this.speed.y;
         this.object.position.x += this.speed.x;
-        if (this.object.position.y < -5) {
+        if (this.object.position.y < -5 || this.object.position.y > renderer.height+5 || this.object.position.x < -5 || this.object.position.x > renderer.width+5) {
             this.reset();
         }
     }
 };
 SpaceShooter.Bullet.prototype.collision = function (target) {
-    if (target.name == 'enemy') {
-        SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, 0xff0000);
+    if (target.name == 'enemy' || target.name == 'ship') {
+        SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, this.color);
         target.damage(this.stats.damage);
     }
     this.reset();
 };
 
+
+SpaceShooter.BulletEnemy = function (color) {
+
+    SpaceShooter.Bullet.call( this, color );
+
+    this.collisionList = [
+        'ship'
+    ];
+
+};
+SpaceShooter.BulletEnemy.prototype = Object.create( SpaceShooter.Bullet.prototype );
+
+SpaceShooter.BulletEnemy.prototype.constructor = SpaceShooter.BulletEnemy;
+
+SpaceShooter.BulletEnemy.prototype.shoot = function (x, y) {
+    // pick random player
+    var randomPlayer = Math.floor(Math.random() * players.length);
+    if (players[randomPlayer] != null && players[randomPlayer].ship != null) {
+        var speedX = (players[randomPlayer].ship.object.position.x - x) / 100;
+        var speedY = (players[randomPlayer].ship.object.position.y - y) / 100;
+        this.speed = {
+            x: speedX,
+            y: speedY
+        };
+        this.object.visible = true;
+        this.object.position.x = x;
+        this.object.position.y = y;
+    }
+};
 SpaceShooter.Ship = function () {
 
     SpaceShooter.Element.call(this);
@@ -148,20 +178,24 @@ SpaceShooter.Ship.prototype.setSpeed = function (x, y) {
 
 SpaceShooter.Ship.prototype.collision = function (element) {
     if (this.imuumCountdown <= 0 && element.stats != null && element.stats.damage != null) {
-        this.stats.hp -= element.stats.damage;
+        this.damage(element.stats.damage);
     }
     if (element.stats != null && element.stats.hp != null) {
         element.damage(this.stats.damage);
-    }
-    if (this.stats.hp <= 0) {
-        this.died();
-        return;
     }
     var halfX = this.object.width / 2;
     var randomX = getRandom(this.object.position.x - halfX, this.object.position.x + halfX);
     var halfY = this.object.height / 2;
     var randomY = getRandom(this.object.position.y - halfY, this.object.position.y + halfY);
     SpaceShooter.Tools.addHitSparkles(randomX, randomY, this.object.tint);
+};
+
+SpaceShooter.Ship.prototype.damage = function (damage) {
+    this.stats.hp -= damage;
+    if (this.stats.hp <= 0) {
+        this.died();
+        return;
+    }
 };
 
 /**

@@ -1,6 +1,6 @@
 SpaceShooter.Enemy = function () {
 
-    SpaceShooter.Element.call( this );
+    SpaceShooter.Element.call(this);
     this.name = 'enemy';
     this.filter = {};
     this.stats = {
@@ -17,34 +17,47 @@ SpaceShooter.Enemy = function () {
         'ship'
     ];
 
-    this.init = function () {
-        SpaceShooter.Element.prototype.init.call(this);
-    };
-
-    this.update = function (time) {
-        SpaceShooter.Element.prototype.update.call(this, time);
-    };
-    this.destroy = function() {
-        if (this.object.visible == false) {
-            return;
-        }
-        SpaceShooter.Tools.addExplosion(this.object.x, this.object.y, this.stats.color);
-        SpaceShooter.addScore(this.stats.score, this.object.x, this.object.y);
-        this.remove();
-    };
+    this.bullets = [];
+    this.numberOfBullets = 2;
+    this.bulletCounter = 50;
+    this._bulletCounter = this.bulletCounter;
 
 };
 
-SpaceShooter.Enemy.prototype = Object.create( SpaceShooter.Element.prototype );
+SpaceShooter.Enemy.prototype = Object.create(SpaceShooter.Element.prototype);
 
 SpaceShooter.Enemy.prototype.constructor = SpaceShooter.Enemy;
 
-SpaceShooter.Enemy.prototype.collision = function(element) {
+SpaceShooter.Enemy.prototype.init = function (textures) {
+    SpaceShooter.Element.prototype.init.call(this, textures);
+    this._bulletCounter = this.bulletCounter;
+    for (var i = 0; i < this.numberOfBullets; i++) {
+        var bullet = new SpaceShooter.BulletEnemy(this.stats.color);
+        bullet.init();
+        bullet.add();
+        this.bullets.push(bullet);
+    }
+};
+
+SpaceShooter.Enemy.prototype.update = function (time) {
+    SpaceShooter.Element.prototype.update.call(this, time);
+};
+
+SpaceShooter.Enemy.prototype.destroy = function () {
+    if (this.object.visible == false) {
+        return;
+    }
+    SpaceShooter.Tools.addExplosion(this.object.x, this.object.y, this.stats.color);
+    SpaceShooter.addScore(this.stats.score, this.object.x, this.object.y);
+    this.remove();
+};
+
+SpaceShooter.Enemy.prototype.collision = function (element) {
     if (element.name == 'ship') {
         element.collision(this);
     }
 };
-SpaceShooter.Enemy.prototype.damage = function(damage) {
+SpaceShooter.Enemy.prototype.damage = function (damage) {
     this.stats.hp -= damage;
     if (this.stats.hp < 0) {
         this.destroy();
@@ -53,7 +66,7 @@ SpaceShooter.Enemy.prototype.damage = function(damage) {
 
 SpaceShooter.EnemyBigShip = function () {
 
-    SpaceShooter.Enemy.call( this );
+    SpaceShooter.Enemy.call(this);
 
     this.hitArea = new PIXI.Polygon([
             new PIXI.Point(150, 73),
@@ -79,21 +92,74 @@ SpaceShooter.EnemyBigShip = function () {
     this.texturesNormals = ['wship1n.png'];
 
 };
-SpaceShooter.EnemyBigShip.prototype = Object.create( SpaceShooter.Enemy.prototype );
+SpaceShooter.EnemyBigShip.prototype = Object.create(SpaceShooter.Enemy.prototype);
 
 SpaceShooter.EnemyBigShip.prototype.constructor = SpaceShooter.EnemyBigShip;
 
+SpaceShooter.EnemyAsteroid = function () {
+
+    SpaceShooter.Enemy.call(this);
+    this.filter = {};
+    this.stats = {
+        color: 0xdddddd,
+        hp: 4,
+        score: 40,
+        damage: 10
+    };
+    this.hitArea = new PIXI.Circle(0, 0, 64);
+
+    this.size = {
+        width: 36,
+        height: 36
+    };
+
+    this.textures = [
+        'asteroid001.png',
+        'asteroid002.png',
+        'asteroid003.png',
+        'asteroid004.png'
+    ];
+
+    this.texturesNormals = [
+        'asteroid001n.png',
+        'asteroid002n.png',
+        'asteroid003n.png',
+        'asteroid004n.png'
+    ];
+
+};
+SpaceShooter.EnemyAsteroid.prototype = Object.create(SpaceShooter.Enemy.prototype);
+
+SpaceShooter.EnemyAsteroid.prototype.constructor = SpaceShooter.EnemyAsteroid;
+
+SpaceShooter.EnemyAsteroid.prototype.init = function () {
+
+    var texture = Math.floor(getRandom(0, this.textures.length));
+    this.textures = [this.textures[texture]];
+    this.texturesNormals = [this.texturesNormals[texture]];
+    SpaceShooter.Enemy.prototype.init.call(this);
+//    var normalMapTexture = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + this.texturesNormals[0]);
+//    this.filter = new PIXI.filters.NormalMapFilter(normalMapTexture);
+//
+//    this.filter.uniforms.mapDimensions.value.x = 128;
+//    this.filter.uniforms.mapDimensions.value.y = 128;
+//
+////    this.object.filters = [this.filter];
+//    this.object.normalTexture = normalMapTexture;
+
+};
+
 SpaceShooter.EnemyUfo = function () {
 
-    SpaceShooter.Enemy.call( this );
+    SpaceShooter.Enemy.call(this);
     this.filter = {};
     this.stats = {
         color: 0x003eff,
         hp: 5,
-        score: 50,
+        score: 75,
         damage: 5
     };
-    this.hitArea = new PIXI.Circle(0,0,36);
+    this.hitArea = new PIXI.Circle(0, 0, 36);
 
     this.size = {
         width: 36,
@@ -117,8 +183,25 @@ SpaceShooter.EnemyUfo = function () {
         'alien10014.png',
         'alien10015.png'
     ];
+    this.bulletCounter = 200;
 
 };
-SpaceShooter.EnemyUfo.prototype = Object.create( SpaceShooter.Enemy.prototype );
+SpaceShooter.EnemyUfo.prototype = Object.create(SpaceShooter.Enemy.prototype);
 
 SpaceShooter.EnemyUfo.prototype.constructor = SpaceShooter.EnemyUfo;
+
+SpaceShooter.EnemyUfo.prototype.update = function (time) {
+    if (false !== SpaceShooter.Enemy.prototype.update.call(this, time)) {
+        this.bulletCounter--;
+        if (this.bulletCounter <= 0) {
+            for (var i = 0; i < this.bullets.length; i++) {
+                if (!this.bullets[i].object.visible) {
+                    this.bullets[i].shoot(this.object.position.x, this.object.position.y);
+                    this.bulletCounter = this._bulletCounter;
+                    break;
+                }
+            }
+        }
+
+    }
+};
