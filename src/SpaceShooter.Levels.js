@@ -8,6 +8,8 @@ SpaceShooter.Level = function () {
      */
     this.assets = [];
 
+    this.sounds = [];
+
     /**
      * Name with resources that has been defined in this.assets
      * @type {Array}
@@ -39,6 +41,18 @@ SpaceShooter.Level.prototype.constructor = SpaceShooter.Level;
  * Loads all assets and play() after loading is complete
  */
 SpaceShooter.Level.prototype.start = function () {
+
+    for (var i = 0; i < this.sounds.length; i++) {
+        var sound = new Howl({
+            src: [SpaceShooter.settings.assetsDir + this.sounds[i].file],
+            autoplay: this.sounds[i].autoplay || false,
+            buffer: true,
+            volume: this.sounds[i].volume || 1,
+            loop: this.sounds[i].loop || false
+        });
+        sounds[this.sounds[i].name] = sound;
+    }
+
     var loader = PIXI.loader;
     loader.level = this;
     for (var i = 0; i < this.assets.length; i++) {
@@ -215,6 +229,32 @@ SpaceShooter.Level1 = function () {
         {
             name: 'background',
             file: 'background-far.jpg'
+        }
+    ];
+    this.sounds = [
+        {
+            name: 'sound-background',
+            file: 'sound-background.mp3',
+            loop: true,
+            autoplay: true
+        },
+        {
+            name: 'sound-explosion001',
+            file: 'sound-explosion001.wav'
+        },
+        {
+            name: 'sound-explosion002',
+            file: 'sound-explosion002.wav'
+        },
+        {
+            name: 'sound-impact',
+            file: 'sound-impact.wav',
+            volume:.25
+        },
+        {
+            name: 'sound-laser',
+            file: 'sound-laser.wav',
+            volume:.25
         }
     ];
 

@@ -42,6 +42,8 @@ SpaceShooter.Bullet.prototype.init = function () {
     this.reset();
 };
 SpaceShooter.Bullet.prototype.shoot = function (x, y) {
+
+    sounds['sound-laser'].play();
     this.object.visible = true;
     this.object.position.x = x;
     this.object.position.y = y;
@@ -85,6 +87,8 @@ SpaceShooter.BulletEnemy.prototype.shoot = function (x, y) {
     // pick random player
     var randomPlayer = Math.floor(Math.random() * players.length);
     if (players[randomPlayer] != null && players[randomPlayer].ship != null) {
+
+        sounds['sound-laser'].play();
         var speedX = (players[randomPlayer].ship.object.position.x - x) / 100;
         var speedY = (players[randomPlayer].ship.object.position.y - y) / 100;
         this.speed = {

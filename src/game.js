@@ -2,7 +2,7 @@
  * Created by Casmo on 17-6-2015.
  */
 window.onload = init;
-var renderer, stage, players = [], testShip;
+var renderer, stage, players = [], sounds = [], testShip;
 
 function init() {
     COUCHFRIENDS.settings.host = 'ws.couchfriends.com';

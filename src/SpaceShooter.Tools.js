@@ -76,6 +76,7 @@ SpaceShooter.Tools.addHitSparkles = function (x, y, color) {
     if (this.hitSparkles[this.hitSparklesCount].object.visible == true) {
         return false;
     }
+    sounds['sound-impact'].play();
     if (color != null) {
         this.hitSparkles[this.hitSparklesCount].setColor(color);
     }
@@ -98,6 +99,7 @@ SpaceShooter.Tools.addExplosion = function (x, y, color) {
     if (this.explosions[this.explosionsCount].object.visible == true) {
         return false;
     }
+    sounds['sound-explosion001'].play();
     this.explosions[this.explosionsCount].object.position.x = x;
     this.explosions[this.explosionsCount].object.position.y = y;
     this.explosions[this.explosionsCount].play(color);
