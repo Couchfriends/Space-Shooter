@@ -42,6 +42,7 @@ SpaceShooter.Level.prototype.constructor = SpaceShooter.Level;
  */
 SpaceShooter.Level.prototype.start = function () {
 
+    Howler.volume(.5);
     for (var i = 0; i < this.sounds.length; i++) {
         var sound = new Howl({
             src: [SpaceShooter.settings.assetsDir + this.sounds[i].file],
