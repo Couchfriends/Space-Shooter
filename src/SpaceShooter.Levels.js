@@ -90,7 +90,7 @@ SpaceShooter.Level.prototype.play = function () {
  */
 SpaceShooter.Level.prototype.spawnElement = function() {
 
-    if (players.length == -1) { // Make 0 on end
+    if (players.length == 0) {
         return;
     }
     this._elementsSpawned++;
@@ -286,17 +286,17 @@ SpaceShooter.Level1.prototype.play = function () {
         star.add();
     }
     //COUCHFRIENDS.connect();
-    var x = 20;
+    var x = renderer.width - 20;
     var dudeTexture = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + 'life.png');
     for (var i = 0; i < SpaceShooter.lives; i++) {
         var life = new PIXI.Sprite(dudeTexture);
-        life.position.y = 20;
+        life.position.y = 60;
         life.position.x = x;
         life.zIndex = 99;
-        life.anchor.x = 0;
+        life.anchor.x = 1;
         life.anchor.y = 0;
         SpaceShooter.lifeDudes.push(life);
-        x += 26;
+        x -= 26;
         stage.addChild(life);
 
     }
@@ -318,6 +318,26 @@ SpaceShooter.Level1.prototype.play = function () {
     window.addEventListener('mouseup', function (e) {
         testShip.shooting = false;
     });
+    window.addEventListener('keyup', function (e) {
+        if (e.key == 'm') {
+            soundMuteUnmute();
+        }
+        if (e.key == '+') {
+            soundIncreaseVolume();
+        }
+        if (e.key == '-') {
+            soundDecreaseVolume();
+        }
+    });
+    document.getElementById('sound-mute').addEventListener('click', function(e) {
+        soundMuteUnmute();
+    }, false);
+    document.getElementById('sound-volume-down').addEventListener('click', function(e) {
+        soundDecreaseVolume();
+    }, false);
+    document.getElementById('sound-volume-up').addEventListener('click', function(e) {
+        soundIncreaseVolume();
+    }, false);
 
     var score = new SpaceShooter.TextScore();
     score.init();
@@ -326,5 +346,41 @@ SpaceShooter.Level1.prototype.play = function () {
     score.add();
 
     stage.updateLayersOrder();
+    varClearTimeout = setTimeout(function() {document.getElementById('ui').className = 'fadeOut';}, 5000);
 
 };
+var varClearTimeout = 0;
+function soundMuteUnmute() {
+    clearTimeout(varClearTimeout);
+    var mute = true;
+    if (Howler._muted == true) {
+        mute = false;
+    }
+    Howler.mute(mute);
+    document.getElementById('ui').className = 'fadeIn';
+    varClearTimeout = setTimeout(function() {document.getElementById('ui').className = 'fadeOut';}, 5000);
+}
+
+function soundDecreaseVolume() {
+    clearTimeout(varClearTimeout);
+    var volume = Howler._volume;
+    if (volume > 0) {
+        volume -= .1;
+    }
+    Howler.mute(false);
+    Howler.volume(volume);
+    document.getElementById('ui').className = 'fadeIn';
+    varClearTimeout = setTimeout(function() {document.getElementById('ui').className = 'fadeOut';}, 5000);
+}
+
+function soundIncreaseVolume() {
+    clearTimeout(varClearTimeout);
+    var volume = Howler._volume;
+    if (volume < 1) {
+        volume += .1;
+    }
+    Howler.mute(false);
+    Howler.volume(volume);
+    document.getElementById('ui').className = 'fadeIn';
+    varClearTimeout = setTimeout(function() {document.getElementById('ui').className = 'fadeOut';}, 5000);
+}

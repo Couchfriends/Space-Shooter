@@ -5,9 +5,31 @@ html, body, canvas, #game {
 }
 body {
   background-color: #000;
+  font-family: arial, sans-serif;
 }
 canvas {
   position: absolute;
   left: 0;
   top: 0;
+}
+#ui {
+  z-index: 99;
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  color: #fff;
+  font-size: 14px;
+  img {
+    width: 32px;
+    cursor: pointer;
+  }
+  p {
+    display: block;
+  }
+}
+.fadeOut {
+  opacity: .2;
+}
+.fadeIn {
+  opacity: 1;
 }
