@@ -285,7 +285,7 @@ SpaceShooter.Level1.prototype.play = function () {
         star.init();
         star.add();
     }
-    //COUCHFRIENDS.connect();
+    COUCHFRIENDS.connect();
     var x = renderer.width - 20;
     var dudeTexture = PIXI.Texture.fromImage(SpaceShooter.settings.assetsDir + 'life.png');
     for (var i = 0; i < SpaceShooter.lives; i++) {
@@ -300,6 +300,7 @@ SpaceShooter.Level1.prototype.play = function () {
         stage.addChild(life);
 
     }
+    /*
     testShip = new SpaceShooter.Ship();
     testShip.init();
     testShip.add();
@@ -318,7 +319,11 @@ SpaceShooter.Level1.prototype.play = function () {
     window.addEventListener('mouseup', function (e) {
         testShip.shooting = false;
     });
+    */
     window.addEventListener('keyup', function (e) {
+        if (e.key == null) {
+            return;
+        }
         if (e.key == 'm') {
             soundMuteUnmute();
         }
