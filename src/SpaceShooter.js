@@ -42,6 +42,7 @@ var SpaceShooter = {
         else {
             this.lifeDudes[this.lives].visible = false;
         }
+        this.level.reset();
     }
 };
 

@@ -290,8 +290,32 @@ SpaceShooter.TextScore.prototype.update = function(time) {
     if (this.displayScore == SpaceShooter.score) {
         return;
     }
-    if (this.displayScore < SpaceShooter.score) {
+    if (this.displayScore < (SpaceShooter.score-10000)) {
+        this.displayScore += 10000;
+    }
+    else if (this.displayScore < (SpaceShooter.score-1000)) {
+        this.displayScore += 1000;
+    }
+    else if (this.displayScore < (SpaceShooter.score-100)) {
+        this.displayScore += 100;
+    }
+    else if (this.displayScore < (SpaceShooter.score-10)) {
+        this.displayScore += 10;
+    }
+    else if (this.displayScore < SpaceShooter.score) {
         this.displayScore++;
+    }
+    else if (this.displayScore > (SpaceShooter.score+10000)) {
+        this.displayScore -= 10000;
+    }
+    else if (this.displayScore > (SpaceShooter.score+1000)) {
+        this.displayScore -= 1000;
+    }
+    else if (this.displayScore > (SpaceShooter.score+100)) {
+        this.displayScore -= 100;
+    }
+    else if (this.displayScore > (SpaceShooter.score+10)) {
+        this.displayScore -= 10;
     }
     else {
         this.displayScore--;

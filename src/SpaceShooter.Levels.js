@@ -37,6 +37,12 @@ SpaceShooter.Level = function () {
 
 SpaceShooter.Level.prototype.constructor = SpaceShooter.Level;
 
+SpaceShooter.Level.prototype.reset = function () {
+
+    this.nextDifficultyIncreased = 250; // Difficulty increased per this score
+    this.difficultNumber = 1;
+
+};
 /**
  * Loads all assets and play() after loading is complete
  */
@@ -47,7 +53,7 @@ SpaceShooter.Level.prototype.start = function () {
         var sound = new Howl({
             src: [SpaceShooter.settings.assetsDir + this.sounds[i].file],
             autoplay: this.sounds[i].autoplay || false,
-            buffer: true,
+            buffer: false,
             volume: this.sounds[i].volume || 1,
             loop: this.sounds[i].loop || false
         });

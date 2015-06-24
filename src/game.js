@@ -24,6 +24,7 @@ function init() {
     document.getElementById('game').appendChild(renderer.view);
     var level = new SpaceShooter.Level1();
     level.start();
+    SpaceShooter.level = level;
     stage.updateLayersOrder();
     requestAnimationFrame(update);
 }
