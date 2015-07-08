@@ -24,6 +24,24 @@ var SpaceShooter = {
     },
 
     addScore: function (score, x, y) {
+        if (players.length >= 3) {
+            achievements.teamEffort += score;
+            if (typeof achievements.hasTeamEffort == false && achievements.teamEffort > 25000) {
+                // Unlock achievement for all players
+                achievements.hasTeamEffort = true;
+                for (var i = 0; i < players.length; i++) {
+                    var jsonData = {
+                        topic: 'game',
+                        action: 'achievementUnlock',
+                        data: {
+                            playerId: players[i].id,
+                            key: 'team_effort'
+                        }
+                    };
+                    COUCHFRIENDS.send(jsonData);
+                }
+            }
+        }
         this.score += score;
         if (x != null && y != null) {
             // Spawn text
@@ -38,6 +56,8 @@ var SpaceShooter = {
             for (var i = 0; i < this.lifeDudes.length; i++) {
                 this.lifeDudes[i].visible = true;
             }
+            // Reset achievements
+            resetAchievements();
         }
         else {
             this.lifeDudes[this.lives].visible = false;

@@ -2,7 +2,15 @@
  * Created by Casmo on 17-6-2015.
  */
 window.onload = init;
-var renderer, stage, players = [], sounds = [], testShip;
+var renderer, stage, players = [], sounds = [], testShip, achievements = {};
+function resetAchievements() {
+    achievements.teamEffort = 0;
+    achievements.hasTeamEffort = false;
+    achievements.bulletHits = false;
+    achievements.ufosKilled = 0;
+    achievements.asteroidsKilled = 0;
+}
+resetAchievements();
 
 function init() {
     COUCHFRIENDS.settings.host = 'ws.couchfriends.com';
@@ -58,6 +66,10 @@ COUCHFRIENDS.on('playerJoined', function (data) {
     };
     COUCHFRIENDS.send(jsonData);
     stage.updateLayersOrder();
+
+    if (players.length <= 3) {
+        achievements.teamEffort = 0;
+    }
 });
 
 COUCHFRIENDS.on('playerOrientation', function (data) {
@@ -111,6 +123,9 @@ COUCHFRIENDS.on('playerLeft', function (data) {
             players.splice(i, 1);
             return;
         }
+    }
+    if (players.length < 3) {
+        achievements.teamEffort = 0;
     }
 });
 

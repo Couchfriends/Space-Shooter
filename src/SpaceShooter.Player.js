@@ -65,6 +65,9 @@ SpaceShooter.Bullet.prototype.collision = function (target) {
     if (target.name == 'enemy' || target.name == 'ship') {
         SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, this.color);
         target.damage(this.stats.damage);
+        if (target.name == 'ship') {
+            achievements.bulletHits = true;
+        }
     }
     this.reset();
 };
@@ -100,6 +103,7 @@ SpaceShooter.BulletEnemy.prototype.shoot = function (x, y) {
         this.object.position.y = y;
     }
 };
+
 SpaceShooter.Ship = function () {
 
     SpaceShooter.Element.call(this);

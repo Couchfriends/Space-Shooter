@@ -45,7 +45,7 @@ SpaceShooter.Enemy.prototype.update = function (time) {
 
 SpaceShooter.Enemy.prototype.destroy = function () {
     if (this.object.visible == false) {
-        return;
+        return false;
     }
     SpaceShooter.Tools.addExplosion(this.object.x, this.object.y, this.stats.color);
     SpaceShooter.addScore(this.stats.score, this.object.x, this.object.y);
@@ -149,6 +149,26 @@ SpaceShooter.EnemyAsteroid.prototype.init = function () {
 
 };
 
+SpaceShooter.EnemyAsteroid.prototype.destroy = function () {
+    var destroyed = SpaceShooter.Enemy.prototype.destroy.call(this);
+    if (destroyed == true) {
+        achievements.asteroidsKilled++;
+        if (achievements.asteroidsKilled == 10) {
+            for (var i = 0; i < players.length; i++) {
+                var jsonData = {
+                    topic: 'game',
+                    action: 'achievementUnlock',
+                    data: {
+                        playerId: players[i].id,
+                        key: 'asteroid_fighter'
+                    }
+                };
+                COUCHFRIENDS.send(jsonData);
+            }
+        }
+    }
+};
+
 SpaceShooter.EnemyUfo = function () {
 
     SpaceShooter.Enemy.call(this);
@@ -203,5 +223,38 @@ SpaceShooter.EnemyUfo.prototype.update = function (time) {
             }
         }
 
+    }
+};
+
+SpaceShooter.EnemyUfo.prototype.destroy = function () {
+    var destroyed = SpaceShooter.Enemy.prototype.destroy.call(this);
+    if (destroyed == true) {
+        achievements.ufosKilled++;
+        if (achievements.ufosKilled == 10) {
+            for (var i = 0; i < players.length; i++) {
+                var jsonData = {
+                    topic: 'game',
+                    action: 'achievementUnlock',
+                    data: {
+                        playerId: players[i].id,
+                        key: 'not_from_this_world'
+                    }
+                };
+                COUCHFRIENDS.send(jsonData);
+            }
+        }
+        if (achievements.ufosKilled == 20 && achievements.bulletHits == false) {
+            for (var i = 0; i < players.length; i++) {
+                var jsonData = {
+                    topic: 'game',
+                    action: 'achievementUnlock',
+                    data: {
+                        playerId: players[i].id,
+                        key: 'not_from_this_world'
+                    }
+                };
+                COUCHFRIENDS.send(jsonData);
+            }
+        }
     }
 };
