@@ -44,7 +44,6 @@ var SpaceShooter = {
         }
         this.score += score;
 
-        console.log(x,y,score);
         if (x != null && y != null) {
             // Spawn text
             SpaceShooter.Tools.addScore(x,y,score);
