@@ -308,24 +308,24 @@ SpaceShooter.Level1.prototype.play = function () {
 
     }
 
-    testShip = new SpaceShooter.Ship();
-    testShip.init();
-    testShip.add();
-    var player = {
-        id: 0,
-        ship: testShip
-    };
-    players.push(player);
-    window.addEventListener('mousemove', function (e) {
-        testShip.object.position.x = e.clientX;
-        testShip.object.position.y = e.clientY;
-    });
-    window.addEventListener('mousedown', function (e) {
-        testShip.shooting = true;
-    });
-    window.addEventListener('mouseup', function (e) {
-        testShip.shooting = false;
-    });
+    //testShip = new SpaceShooter.Ship();
+    //testShip.init();
+    //testShip.add();
+    //var player = {
+    //    id: 123,
+    //    ship: testShip
+    //};
+    //players.push(player);
+    //window.addEventListener('mousemove', function (e) {
+    //    testShip.object.position.x = e.clientX;
+    //    testShip.object.position.y = e.clientY;
+    //});
+    //window.addEventListener('mousedown', function (e) {
+    //    testShip.shooting = true;
+    //});
+    //window.addEventListener('mouseup', function (e) {
+    //    testShip.shooting = false;
+    //});
     window.addEventListener('keyup', function (e) {
         if (e.key == null) {
             return;

@@ -26,7 +26,7 @@ var SpaceShooter = {
     addScore: function (score, x, y) {
         if (players.length >= 3) {
             achievements.teamEffort += score;
-            if (typeof achievements.hasTeamEffort == false && achievements.teamEffort > 25000) {
+            if (achievements.hasTeamEffort == false && achievements.teamEffort > 25000) {
                 // Unlock achievement for all players
                 achievements.hasTeamEffort = true;
                 for (var i = 0; i < players.length; i++) {

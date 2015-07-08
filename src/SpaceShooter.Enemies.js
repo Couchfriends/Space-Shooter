@@ -151,7 +151,7 @@ SpaceShooter.EnemyAsteroid.prototype.init = function () {
 
 SpaceShooter.EnemyAsteroid.prototype.destroy = function () {
     var destroyed = SpaceShooter.Enemy.prototype.destroy.call(this);
-    if (destroyed == true) {
+    if (destroyed != false) {
         achievements.asteroidsKilled++;
         if (achievements.asteroidsKilled == 10) {
             for (var i = 0; i < players.length; i++) {
@@ -228,7 +228,7 @@ SpaceShooter.EnemyUfo.prototype.update = function (time) {
 
 SpaceShooter.EnemyUfo.prototype.destroy = function () {
     var destroyed = SpaceShooter.Enemy.prototype.destroy.call(this);
-    if (destroyed == true) {
+    if (destroyed != false) {
         achievements.ufosKilled++;
         if (achievements.ufosKilled == 10) {
             for (var i = 0; i < players.length; i++) {
