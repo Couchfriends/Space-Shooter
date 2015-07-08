@@ -2,7 +2,7 @@
  * Created by Casmo on 17-6-2015.
  */
 window.onload = init;
-var renderer, stage, players = [], sounds = [], testShip, achievements = {};
+var renderer, stage, players = [], sounds = [], achievements = {};
 function resetAchievements() {
     achievements.teamEffort = 0;
     achievements.hasTeamEffort = false;

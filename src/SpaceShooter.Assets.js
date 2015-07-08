@@ -268,7 +268,6 @@ SpaceShooter.Text.prototype.init = function() {
     this.object.zIndex = 99;
 };
 
-
 SpaceShooter.TextScore = function () {
 
     SpaceShooter.Text.call(this);
@@ -321,4 +320,46 @@ SpaceShooter.TextScore.prototype.update = function(time) {
         this.displayScore--;
     }
     this.object.text = SpaceShooter.scoreCurrency + ' ' + this.displayScore;
+};
+
+/**
+ * A small token of reward after killing something
+ * @constructor
+ */
+SpaceShooter.TextBonusScore = function () {
+
+    SpaceShooter.Text.call(this);
+    this.speed = 5;
+    this.name = 'font';
+    this.text = '';
+    this.font = 'bold 36px Arial';
+    this.fill = '#ff0000';
+    this.align = 'center';
+    this.stroke = '#ffffff';
+    this.strokeThickness = 3;
+};
+SpaceShooter.TextBonusScore.prototype = Object.create(SpaceShooter.Text.prototype);
+
+SpaceShooter.TextBonusScore.prototype.constructor = SpaceShooter.TextBonusScore;
+
+SpaceShooter.TextBonusScore.prototype.init = function() {
+    SpaceShooter.Text.prototype.init.call(this);
+    this.object.anchor.x = .5;
+    this.object.anchor.y = .5;
+};
+
+SpaceShooter.TextBonusScore.prototype.update = function(time) {
+    var update = SpaceShooter.Text.prototype.update.call(this, time);
+    if (update != false) {
+        this.object.position.y -= this.speed;
+        if (this.speed > 0) {
+            this.speed *= .92;
+        }
+        this.object.alpha -= .015;
+    }
+    if (this.object.alpha < .1) {
+        this.object.visible = false;
+        this.speed = 5;
+        this.object.alpha = 1;
+    }
 };

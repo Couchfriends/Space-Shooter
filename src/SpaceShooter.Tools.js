@@ -7,7 +7,9 @@ SpaceShooter.Tools = {
     hitSparkles: [],
     hitSparklesCount: 0,
     explosions: [],
-    explosionsCount: 0
+    explosionsCount: 0,
+    scores: [],
+    scoreCount: 0
 };
 
 SpaceShooter.Tools.init = function (resources) {
@@ -64,6 +66,14 @@ SpaceShooter.Tools.init = function (resources) {
         sparkle.object.visible = false;
         this.hitSparkles.push(sparkle);
     }
+
+    for (var i = 0; i < 5; i++) {
+        var textBonus = new SpaceShooter.TextBonusScore();
+        textBonus.init();
+        textBonus.object.visible = false;
+        textBonus.add();
+        this.scores.push(textBonus);
+    }
 };
 
 /**
@@ -106,5 +116,19 @@ SpaceShooter.Tools.addExplosion = function (x, y, color) {
     this.explosionsCount++;
     if (this.explosionsCount >= this.explosions.length) {
         this.explosionsCount = 0;
+    }
+};
+
+SpaceShooter.Tools.addScore = function (x, y, score) {
+    if (this.scores[this.scoreCount].object.visible == true) {
+        return false;
+    }
+    this.scores[this.scoreCount].object.position.x = x;
+    this.scores[this.scoreCount].object.position.y = y;
+    this.scores[this.scoreCount].object.text = score;
+    this.scores[this.scoreCount].object.visible = true;
+    this.scoreCount++;
+    if (this.scoreCount >= this.scores.length) {
+        this.scoreCount = 0;
     }
 };
