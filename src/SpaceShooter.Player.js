@@ -149,6 +149,9 @@ SpaceShooter.Ship = function () {
         bullet.add();
         this.bullets.push(bullet);
     }
+    this.hpBar = new PIXI.Graphics();
+    this.hpBar.beginFill(0x00ff00, 1);
+    this.hpBar.drawRect(-25, 80, 50, 7);
 
 };
 
@@ -159,6 +162,7 @@ SpaceShooter.Ship.prototype.init = function () {
     SpaceShooter.Element.prototype.init.call(this);
     this.object.tint = this.tint;
     this.object.zIndex = 11;
+    this.object.addChild(this.hpBar);
 };
 
 SpaceShooter.Ship.prototype.setSpeed = function (x, y) {
@@ -196,7 +200,26 @@ SpaceShooter.Ship.prototype.collision = function (element) {
 
 SpaceShooter.Ship.prototype.damage = function (damage) {
     this.stats.hp -= damage;
+    var percent = 1 / 50 * this.stats.hp;
+    var color = 0x00ff00;
+    if (percent < .75) {
+        color = 0xffff00;
+    }
+    if (percent < .5) {
+        color = 0xff9900;
+    }
+    if (percent < .25) {
+        color = 0xff0000;
+    }
+    this.object.children[0].clear();
+    this.object.children[0].beginFill(color, 1);
+    this.hpBar.drawRect(-25, 80, 50, 7);
+    this.object.children[0].scale.x = percent;
     if (this.stats.hp <= 0) {
+        this.object.children[0].clear();
+        this.object.children[0].beginFill(0x00ff00, 1);
+        this.hpBar.drawRect(-25, 80, 50, 7);
+        this.object.children[0].scale.x = 1;
         this.died();
         return;
     }
@@ -239,17 +262,17 @@ SpaceShooter.Ship.prototype.update = function () {
     }
     this.object.position.y += this.speed.y;
     this.object.position.x += this.speed.x;
-    if (this.object.position.x < 0) {
-        this.object.position.x = 0;
+    if (this.object.position.x < (this.object.width/2)) {
+        this.object.position.x = (this.object.width/2);
     }
-    else if (this.object.position.x > SpaceShooter.settings.width) {
-        this.object.position.x = SpaceShooter.settings.width;
+    else if (this.object.position.x > (SpaceShooter.settings.width - (this.object.width/2))) {
+        this.object.position.x = (SpaceShooter.settings.width - (this.object.width/2));
     }
-    if (this.object.position.y < 0) {
-        this.object.position.y = 0;
+    if (this.object.position.y < (this.object.height/2)) {
+        this.object.position.y = (this.object.height/2);
     }
-    else if (this.object.position.y > SpaceShooter.settings.height) {
-        this.object.position.y = SpaceShooter.settings.height;
+    else if (this.object.position.y > (SpaceShooter.settings.height - (this.object.height/2))) {
+        this.object.position.y = (SpaceShooter.settings.height - (this.object.height/2));
     }
     var texture = Math.floor(this.speed.x / this.textureSpeed) + Math.floor(this.textures.length / 2);
     if (texture < 0) {
