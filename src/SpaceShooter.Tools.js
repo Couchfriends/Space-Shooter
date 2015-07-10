@@ -6,10 +6,14 @@ SpaceShooter.Tools = {
 
     hitSparkles: [],
     hitSparklesCount: 0,
+    pickupSparkles: [],
+    pickupSparklesCount: 0,
     explosions: [],
     explosionsCount: 0,
     scores: [],
-    scoreCount: 0
+    scoreCount: 0,
+    bonus: [],
+    bonusCount: 0
 };
 
 SpaceShooter.Tools.init = function (resources) {
@@ -31,7 +35,7 @@ SpaceShooter.Tools.init = function (resources) {
         this.explosions.push(explosion);
     }
 
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 50; i++) {
         var sparkle = new SpaceShooter.Sparkles();
         sparkle.stats = {
             color: 0xffffff,
@@ -68,12 +72,74 @@ SpaceShooter.Tools.init = function (resources) {
     }
 
     for (var i = 0; i < 5; i++) {
+        var sparkle = new SpaceShooter.Sparkles();
+        sparkle.stats = {
+            color: 0xfff000,
+            particlesCount: 20,
+            size: {
+                min: 1.6,
+                max: 5.8
+            },
+            speed: {
+                x: {
+                    min:-6,
+                    max:6
+                },
+                y: {
+                    min:-6,
+                    max:2
+                },
+                reduce: {
+                    x: {
+                        min:.8,
+                        max:.9
+                    },
+                    y: {
+                        min: .9,
+                        max:.99
+                    }
+                }
+            }
+        };
+        sparkle.init();
+        sparkle.add();
+        sparkle.object.visible = false;
+        this.pickupSparkles.push(sparkle);
+    }
+
+    for (var i = 0; i < 5; i++) {
         var textBonus = new SpaceShooter.TextBonusScore();
         textBonus.init();
         textBonus.object.visible = false;
         textBonus.add();
         this.scores.push(textBonus);
     }
+
+    for (var i = 0; i < 15; i++) {
+        var bonus = new SpaceShooter.BonusMoney();
+        bonus.init();
+        bonus.object.visible = false;
+        bonus.add();
+        this.bonus.push(bonus);
+    }
+
+    for (var i = 0; i < 3; i++) {
+        var bonus = new SpaceShooter.BonusShield();
+        bonus.init();
+        bonus.object.visible = false;
+        bonus.add();
+        this.bonus.push(bonus);
+    }
+
+    for (var i = 0; i < 2; i++) {
+        var bonus = new SpaceShooter.BonusGun();
+        bonus.init();
+        bonus.object.visible = false;
+        bonus.add();
+        this.bonus.push(bonus);
+    }
+
+    this.bonus.shuffle();
 };
 
 /**
@@ -98,6 +164,22 @@ SpaceShooter.Tools.addHitSparkles = function (x, y, color) {
         this.hitSparklesCount = 0;
     }
 };
+SpaceShooter.Tools.addPickupSparkles = function (x, y, color) {
+    if (this.pickupSparkles[this.pickupSparklesCount].object.visible == true) {
+        return false;
+    }
+    if (color != null) {
+        this.pickupSparkles[this.pickupSparklesCount].setColor(color);
+    }
+    this.pickupSparkles[this.pickupSparklesCount].object.position.x = x;
+    this.pickupSparkles[this.pickupSparklesCount].object.position.y = y;
+    this.pickupSparkles[this.pickupSparklesCount].object.visible = true;
+    this.pickupSparklesCount++;
+    if (this.pickupSparklesCount >= this.pickupSparkles.length) {
+        this.pickupSparklesCount = 0;
+    }
+};
+
 
 /**
  * Function for adding standard explosion
@@ -130,5 +212,18 @@ SpaceShooter.Tools.addScore = function (x, y, score) {
     this.scoreCount++;
     if (this.scoreCount >= this.scores.length) {
         this.scoreCount = 0;
+    }
+};
+
+SpaceShooter.Tools.addBonus = function (x, y) {
+    if (Math.random() * 10 < 8 || this.bonus[this.bonusCount].object.visible == true) {
+        return false;
+    }
+    this.bonus[this.bonusCount].object.position.x = x;
+    this.bonus[this.bonusCount].object.position.y = y;
+    this.bonus[this.bonusCount].object.visible = true;
+    this.bonusCount++;
+    if (this.bonusCount >= this.bonus.length) {
+        this.bonusCount = 0;
     }
 };

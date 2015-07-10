@@ -251,6 +251,7 @@ SpaceShooter.Text = function () {
     this.stroke = '#ffffff';
     this.strokeThickness = 6;
 };
+
 SpaceShooter.Text.prototype = Object.create(SpaceShooter.Element.prototype);
 
 SpaceShooter.Text.prototype.constructor = SpaceShooter.Text;
@@ -362,4 +363,114 @@ SpaceShooter.TextBonusScore.prototype.update = function(time) {
         this.speed = 5;
         this.object.alpha = 1;
     }
+};
+
+
+SpaceShooter.Bonus = function () {
+
+    SpaceShooter.Element.call(this);
+    this.color = 0xfff000;
+    this.textures = [
+        'shield-gold.png'
+    ];
+    this.collisionList = [
+        'ship'
+    ];
+
+};
+
+SpaceShooter.Bonus.prototype = Object.create(SpaceShooter.Element.prototype);
+
+SpaceShooter.Bonus.prototype.constructor = SpaceShooter.Bonus;
+
+SpaceShooter.Bonus.prototype.update = function(time) {
+    var update = SpaceShooter.Element.prototype.update.call(this, time);
+    if (update != false) {
+        this.object.position.y += .5;
+    }
+    var date = new Date();
+    var milliseconds = .5 + (Math.abs((500 - date.getMilliseconds())/2) / 500);
+    this.object.scale.x = this.object.scale.y = milliseconds;
+    if (this.object.position.y > (renderer.height + this.object.height)) {
+        this.object.visible = false;
+    }
+};
+
+SpaceShooter.Bonus.prototype.collision = function (target) {
+    this.object.visible = false;
+};
+
+/**
+ * Power up guns
+ * @constructor
+ */
+SpaceShooter.BonusGun = function () {
+
+    SpaceShooter.Bonus.call(this);
+    this.textures = [
+        'bolt-gold.png'
+    ];
+};
+
+SpaceShooter.BonusGun.prototype = Object.create(SpaceShooter.Bonus.prototype);
+
+SpaceShooter.BonusGun.prototype.constructor = SpaceShooter.BonusGun;
+
+SpaceShooter.BonusGun.prototype.collision = function (target) {
+    if (target.name == 'ship') {
+        SpaceShooter.Tools.addPickupSparkles(this.object.position.x, this.object.position.y, this.color);
+        if (target.bulletLevel < 5) {
+            target.bulletLevel++;
+        }
+    }
+    this.object.visible = false;
+};
+
+/**
+ * Power up health
+ * @constructor
+ */
+SpaceShooter.BonusShield = function () {
+
+    SpaceShooter.Bonus.call(this);
+    this.textures = [
+        'shield-gold.png'
+    ];
+};
+
+SpaceShooter.BonusShield.prototype = Object.create(SpaceShooter.Bonus.prototype);
+
+SpaceShooter.BonusShield.prototype.constructor = SpaceShooter.BonusShield;
+
+SpaceShooter.BonusShield.prototype.collision = function (target) {
+    if (target.name == 'ship') {
+        SpaceShooter.Tools.addPickupSparkles(this.object.position.x, this.object.position.y, this.color);
+        target.stats.hp = 50;
+        target.damage(0);
+    }
+    this.object.visible = false;
+};
+
+/**
+ * Power up money
+ * @constructor
+ */
+SpaceShooter.BonusMoney = function () {
+
+    SpaceShooter.Bonus.call(this);
+    this.textures = [
+        'star-gold.png'
+    ];
+};
+
+SpaceShooter.BonusMoney.prototype = Object.create(SpaceShooter.Bonus.prototype);
+
+SpaceShooter.BonusMoney.prototype.constructor = SpaceShooter.BonusMoney;
+
+SpaceShooter.BonusMoney.prototype.collision = function (target) {
+    if (target.name == 'ship') {
+        SpaceShooter.Tools.addPickupSparkles(this.object.position.x, this.object.position.y, this.color);
+        SpaceShooter.addScore(1000, this.object.position.x, this.object.position.y);
+    }
+    this.object.visible = false;
 };

@@ -43,7 +43,6 @@ SpaceShooter.Bullet.prototype.init = function () {
 };
 SpaceShooter.Bullet.prototype.shoot = function (x, y) {
 
-    sounds['sound-laser'].play();
     this.object.visible = true;
     this.object.position.x = x;
     this.object.position.y = y;
@@ -61,6 +60,7 @@ SpaceShooter.Bullet.prototype.update = function (time) {
         }
     }
 };
+
 SpaceShooter.Bullet.prototype.collision = function (target) {
     if (target.name == 'enemy' || target.name == 'ship') {
         SpaceShooter.Tools.addHitSparkles(this.object.position.x, this.object.position.y, this.color);
@@ -120,6 +120,7 @@ SpaceShooter.Ship = function () {
         hp: 50,
         damage: 5
     };
+    this.bulletLevel = 1;
     this.name = 'ship'; // initial name so enemies can't hit it. Will be 'ship'
     //this.hitArea = new PIXI.Rectangle(0,0,55,135);
     this.imuumCountdown = 300;
@@ -146,8 +147,8 @@ SpaceShooter.Ship = function () {
     this.originalTint = this.tint;
 
     this.bullets = [];
-    this.bulletCounter = 5;
-    for (var i = 0; i < 20; i++) {
+    this.bulletCounter = 10;
+    for (var i = 0; i < 80; i++) {
         var bullet = new SpaceShooter.Bullet();
         bullet.init();
         bullet.add();
@@ -244,6 +245,7 @@ SpaceShooter.Ship.prototype.died = function () {
     this.speed.x = 0;
     this.speed.y = 0;
     vibrate(this.playerId, 600); // 36 frames on 60fps
+    this.bulletLevel = 1;
     SpaceShooter.removeLife();
 
 };
@@ -289,15 +291,28 @@ SpaceShooter.Ship.prototype.update = function () {
         this.currentTexture = texture;
         this.object.texture = this.textures[this.currentTexture];
     }
+    var y = this.object.position.y - (this.object.height / 2);
     if (this.shooting == true) {
         this.bulletCounter--;
         if (this.bulletCounter <= 0) {
-            for (var i = 0; i < this.bullets.length; i++) {
-                if (!this.bullets[i].object.visible) {
-                    this.bullets[i].shoot(this.object.position.x, this.object.position.y);
-                    this.bulletCounter = 5;
-                    break;
+            this.bulletCounter = 7;
+            var shot = false;
+            var x = this.object.position.x - ((this.bulletLevel-1) * 10);
+            for (var j = 1; j <= this.bulletLevel; j++) {
+                for (var i = 0; i < this.bullets.length; i++) {
+                    if (!this.bullets[i].object.visible) {
+                        this.bullets[i].shoot(x, y);
+                        shot = true;
+                        x += 20;
+                        j++;
+                    }
+                    if (j > this.bulletLevel) {
+                        break;
+                    }
                 }
+            }
+            if (shot == true) {
+                sounds['sound-laser'].play();
             }
         }
     }

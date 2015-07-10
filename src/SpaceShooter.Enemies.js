@@ -47,6 +47,7 @@ SpaceShooter.Enemy.prototype.destroy = function () {
     if (this.object.visible == false) {
         return false;
     }
+    SpaceShooter.Tools.addBonus(this.object.position.x, this.object.position.y);
     SpaceShooter.Tools.addExplosion(this.object.x, this.object.y, this.stats.color);
     SpaceShooter.addScore(this.stats.score, this.object.x, this.object.y);
     this.remove();
