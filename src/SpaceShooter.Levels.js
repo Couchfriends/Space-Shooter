@@ -257,6 +257,10 @@ SpaceShooter.Level1 = function () {
             file: 'sound-explosion002.wav'
         },
         {
+            name: 'sound-bonus',
+            file: 'sound-bonus.wav'
+        },
+        {
             name: 'sound-impact',
             file: 'sound-impact.wav',
             volume:.25
@@ -311,14 +315,14 @@ SpaceShooter.Level1.prototype.play = function () {
 
     }
 
-    testShip = new SpaceShooter.Ship();
-    testShip.init();
-    testShip.add();
-    var player = {
-        id: 123,
-        ship: testShip
-    };
-    players.push(player);
+    //testShip = new SpaceShooter.Ship();
+    //testShip.init();
+    //testShip.add();
+    //var player = {
+    //    id: 123,
+    //    ship: testShip
+    //};
+    //players.push(player);
     window.addEventListener('mousemove', function (e) {
         testShip.object.position.x = e.clientX;
         testShip.object.position.y = e.clientY;

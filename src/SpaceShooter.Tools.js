@@ -3,7 +3,6 @@
  * @type {{}}
  */
 SpaceShooter.Tools = {
-
     hitSparkles: [],
     hitSparklesCount: 0,
     pickupSparkles: [],
@@ -115,7 +114,7 @@ SpaceShooter.Tools.init = function (resources) {
         this.scores.push(textBonus);
     }
 
-    for (var i = 0; i < 15; i++) {
+    for (var i = 0; i < 12; i++) {
         var bonus = new SpaceShooter.BonusMoney();
         bonus.init();
         bonus.object.visible = false;
@@ -123,7 +122,7 @@ SpaceShooter.Tools.init = function (resources) {
         this.bonus.push(bonus);
     }
 
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 2; i++) {
         var bonus = new SpaceShooter.BonusShield();
         bonus.init();
         bonus.object.visible = false;
@@ -152,7 +151,7 @@ SpaceShooter.Tools.addHitSparkles = function (x, y, color) {
     if (this.hitSparkles[this.hitSparklesCount].object.visible == true) {
         return false;
     }
-    sounds['sound-impact'].play();
+    //sounds['sound-impact'].play();
     if (color != null) {
         this.hitSparkles[this.hitSparklesCount].setColor(color);
     }
@@ -216,7 +215,7 @@ SpaceShooter.Tools.addScore = function (x, y, score) {
 };
 
 SpaceShooter.Tools.addBonus = function (x, y) {
-    if (Math.random() * 10 < 8 || this.bonus[this.bonusCount].object.visible == true) {
+    if (Math.random() * 10 < 7 || this.bonus[this.bonusCount].object.visible == true) {
         return false;
     }
     this.bonus[this.bonusCount].object.position.x = x;

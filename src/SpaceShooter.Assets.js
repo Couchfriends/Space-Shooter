@@ -398,6 +398,7 @@ SpaceShooter.Bonus.prototype.update = function(time) {
 
 SpaceShooter.Bonus.prototype.collision = function (target) {
     this.object.visible = false;
+    sounds['sound-bonus'].play();
 };
 
 /**
@@ -423,7 +424,7 @@ SpaceShooter.BonusGun.prototype.collision = function (target) {
             target.bulletLevel++;
         }
     }
-    this.object.visible = false;
+    SpaceShooter.Bonus.prototype.collision.call(this, target);
 };
 
 /**
@@ -448,7 +449,7 @@ SpaceShooter.BonusShield.prototype.collision = function (target) {
         target.stats.hp = 50;
         target.damage(0);
     }
-    this.object.visible = false;
+    SpaceShooter.Bonus.prototype.collision.call(this, target);
 };
 
 /**
@@ -470,7 +471,7 @@ SpaceShooter.BonusMoney.prototype.constructor = SpaceShooter.BonusMoney;
 SpaceShooter.BonusMoney.prototype.collision = function (target) {
     if (target.name == 'ship') {
         SpaceShooter.Tools.addPickupSparkles(this.object.position.x, this.object.position.y, this.color);
-        SpaceShooter.addScore(1000, this.object.position.x, this.object.position.y);
+        SpaceShooter.addScore(500, this.object.position.x, this.object.position.y);
     }
-    this.object.visible = false;
+    SpaceShooter.Bonus.prototype.collision.call(this, target);
 };
