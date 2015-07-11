@@ -251,7 +251,7 @@ SpaceShooter.EnemyUfo.prototype.destroy = function () {
                     action: 'achievementUnlock',
                     data: {
                         playerId: players[i].id,
-                        key: 'not_from_this_world'
+                        key: 'bullet_dodge'
                     }
                 };
                 COUCHFRIENDS.send(jsonData);
