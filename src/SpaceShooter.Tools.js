@@ -122,7 +122,7 @@ SpaceShooter.Tools.init = function (resources) {
         this.bonus.push(bonus);
     }
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 1; i++) {
         var bonus = new SpaceShooter.BonusShield();
         bonus.init();
         bonus.object.visible = false;

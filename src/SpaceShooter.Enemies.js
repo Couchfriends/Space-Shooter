@@ -32,7 +32,7 @@ SpaceShooter.Enemy.prototype.init = function (textures) {
     SpaceShooter.Element.prototype.init.call(this, textures);
     this._bulletCounter = this.bulletCounter;
     for (var i = 0; i < this.numberOfBullets; i++) {
-        var bullet = new SpaceShooter.BulletEnemy(this.stats.color);
+        var bullet = new SpaceShooter.BulletEnemy(0xff0000);
         bullet.init();
         bullet.add();
         this.bullets.push(bullet);

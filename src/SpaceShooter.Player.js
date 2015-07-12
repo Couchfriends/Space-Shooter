@@ -41,14 +41,16 @@ SpaceShooter.Bullet.prototype.init = function () {
     this.object = new PIXI.Graphics();
     this.reset();
 };
-SpaceShooter.Bullet.prototype.shoot = function (x, y) {
+SpaceShooter.Bullet.prototype.shoot = function (x, y, speedX, speedY) {
 
+    speedX = speedX || this.properties.speed.x;
+    speedY = speedY || this.properties.speed.y;
     this.object.visible = true;
     this.object.position.x = x;
     this.object.position.y = y;
     this.speed = {
-        x: this.properties.speed.x,
-        y: this.properties.speed.y
+        x: speedX,
+        y: speedY
     }
 };
 SpaceShooter.Bullet.prototype.update = function (time) {
@@ -143,13 +145,13 @@ SpaceShooter.Ship = function () {
         'smallfighter0011.png'
     ];
     this.textureSpeed = (this.maxSpeed * 2) / this.textures.length;
-    this.tint = randomColor({luminosity: 'light'}).replace(/#/, '0x');
+    this.tint = randomColor().replace(/#/, '0x');
     this.originalTint = this.tint;
 
     this.bullets = [];
     this.bulletCounter = 10;
     for (var i = 0; i < 80; i++) {
-        var bullet = new SpaceShooter.Bullet();
+        var bullet = new SpaceShooter.Bullet(this.tint);
         bullet.init();
         bullet.add();
         this.bullets.push(bullet);
@@ -246,6 +248,10 @@ SpaceShooter.Ship.prototype.died = function () {
     this.speed.y = 0;
     vibrate(this.playerId, 600); // 36 frames on 60fps
     this.bulletLevel = 1;
+    for (var i = 0; i < this.bullets.length; i++) {
+        this.bullets[i].properties.speed.x = 0;
+        this.bullets[i].properties.speed.y = -20;
+    }
     SpaceShooter.removeLife();
 
 };
@@ -297,16 +303,30 @@ SpaceShooter.Ship.prototype.update = function () {
         if (this.bulletCounter <= 0) {
             this.bulletCounter = 7;
             var shot = false;
-            var x = this.object.position.x - ((this.bulletLevel-1) * 10);
+            var x = this.object.position.x - ((this.bulletLevel-1) * 8);
             for (var j = 1; j <= this.bulletLevel; j++) {
                 for (var i = 0; i < this.bullets.length; i++) {
+                    var speedX = 0;
+                    var speedY = -20;
                     if (!this.bullets[i].object.visible) {
-                        this.bullets[i].shoot(x, y);
+                        if (this.bulletLevel == 4 && j == 1) {
+                            speedX = -5;
+                        }
+                        else if (this.bulletLevel == 4 && j == 4) {
+                            speedX = 5;
+                        }
+                        else if (this.bulletLevel == 5 && j == 1) {
+                            speedX = -5;
+                        }
+                        else if (this.bulletLevel == 5 && j == 5) {
+                            speedX = 5;
+                        }
+                        this.bullets[i].shoot(x, y, speedX, speedY);
                         shot = true;
-                        x += 20;
+                        x += 16;
                         j++;
                     }
-                    if (j > this.bulletLevel) {
+                    if (j > this.bulletLevel || j > 10) {
                         break;
                     }
                 }
