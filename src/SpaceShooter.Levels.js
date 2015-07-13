@@ -1,3 +1,27 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Couchfriends
+ * www.couchfriends.com
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 SpaceShooter.Level = function () {
 
     this.name = 'Level name';
@@ -199,6 +223,36 @@ SpaceShooter.Level.prototype.spawnElement = function() {
                 tween.element.object.position.x = this.x;
                 tween.element.object.position.y = this.y;
                 tween.element.object.rotation += tween.element.rotationSpeed;
+
+            })
+            .interpolation(TWEEN.Interpolation.Bezier)
+            .onComplete(function (tween) {
+                tween.element.tween = null; // Is already gone in TWEEN
+                tween.element.remove(); // We should reset it instead of creating a new one
+            })
+            .start();
+        enemy.tween.element = enemy;
+        enemy.add();
+        enemy.onRemove = function () {
+            var indexOf = this.level.elements.indexOf(this);
+            this.level.elements.splice(indexOf, 1);
+        };
+        enemy.level = this;
+        this.elements.push(enemy);
+    }
+    if (this.difficultNumber>1000) {
+        var enemy = new SpaceShooter.EnemyBigShip();
+        enemy.init();
+        enemy.object.position.x = startX;
+        enemy.object.position.y = -150;
+        enemy.tween = new TWEEN.Tween({x: startX, y: -100})
+            .to({
+                x: startX,
+                y: renderer.height + 150
+            }, 20000)
+            .onUpdate(function (p, tween) {
+                tween.element.object.position.x = this.x;
+                tween.element.object.position.y = this.y;
 
             })
             .interpolation(TWEEN.Interpolation.Bezier)

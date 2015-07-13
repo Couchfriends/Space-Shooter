@@ -5,7 +5,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         uglify: {
             options: {
-                banner: '/**\n * @link www.couchfriends.com\n */\n'
+                banner: '/**\n * @link www.couchfriends.com\n * @license MIT\n */\n'
             },
             build: {
                 src: [

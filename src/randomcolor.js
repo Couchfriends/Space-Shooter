@@ -1,3 +1,4 @@
+// http://llllll.li/randomColor/
 ;(function(root, factory) {
 
     // Support AMD
