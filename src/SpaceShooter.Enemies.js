@@ -94,17 +94,17 @@ SpaceShooter.EnemyBigShip = function () {
     SpaceShooter.Enemy.call(this);
 
     this.hitArea = new PIXI.Polygon([
-            new PIXI.Point(150, 73),
-            new PIXI.Point(361, 73),
-            new PIXI.Point(361, 332),
-            new PIXI.Point(256, 441),
-            new PIXI.Point(150, 332)
+            new PIXI.Point(-102, -184),
+            new PIXI.Point(109, -184),
+            new PIXI.Point(109, 75),
+            new PIXI.Point(4, 184),
+            new PIXI.Point(-102, 75)
         ]
     );
 
     this.filter = {};
     this.stats = {
-        hp: 25,
+        hp: 20,
         score: 250
     };
 
@@ -115,11 +115,40 @@ SpaceShooter.EnemyBigShip = function () {
 
     this.textures = ['wship1.png'];
     this.texturesNormals = ['wship1n.png'];
+    this.numberOfBullets = 4;
+    this.bulletCounter = 100;
 
 };
 SpaceShooter.EnemyBigShip.prototype = Object.create(SpaceShooter.Enemy.prototype);
 
 SpaceShooter.EnemyBigShip.prototype.constructor = SpaceShooter.EnemyBigShip;
+
+SpaceShooter.EnemyBigShip.prototype.init = function (textures) {
+    SpaceShooter.Element.prototype.init.call(this, textures);
+    this._bulletCounter = this.bulletCounter;
+    for (var i = 0; i < this.numberOfBullets; i++) {
+        var bullet = new SpaceShooter.BulletEnemyBig(0xff0000);
+        bullet.init();
+        bullet.add();
+        this.bullets.push(bullet);
+    }
+};
+
+SpaceShooter.EnemyBigShip.prototype.update = function (time) {
+    if (false !== SpaceShooter.Enemy.prototype.update.call(this, time)) {
+        this.bulletCounter--;
+        if (this.bulletCounter <= 0) {
+            for (var i = 0; i < this.bullets.length; i++) {
+                if (!this.bullets[i].object.visible) {
+                    this.bullets[i].shoot(this.object.position.x, this.object.position.y+184);
+                    this.bulletCounter = this._bulletCounter;
+                    break;
+                }
+            }
+        }
+
+    }
+};
 
 SpaceShooter.EnemyAsteroid = function () {
 

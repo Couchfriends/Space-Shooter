@@ -240,16 +240,16 @@ SpaceShooter.Level.prototype.spawnElement = function() {
         enemy.level = this;
         this.elements.push(enemy);
     }
-    if (this.difficultNumber>1000) {
+    if (this.difficultNumber>=6) {
         var enemy = new SpaceShooter.EnemyBigShip();
         enemy.init();
         enemy.object.position.x = startX;
-        enemy.object.position.y = -150;
-        enemy.tween = new TWEEN.Tween({x: startX, y: -100})
+        enemy.object.position.y = -250;
+        enemy.tween = new TWEEN.Tween({x: startX, y: -250})
             .to({
                 x: startX,
-                y: renderer.height + 150
-            }, 20000)
+                y: renderer.height + 250
+            }, 21000)
             .onUpdate(function (p, tween) {
                 tween.element.object.position.x = this.x;
                 tween.element.object.position.y = this.y;
@@ -368,7 +368,7 @@ SpaceShooter.Level1.prototype.play = function () {
         stage.addChild(life);
 
     }
-
+    //
     //testShip = new SpaceShooter.Ship();
     //testShip.init();
     //testShip.add();
@@ -387,20 +387,20 @@ SpaceShooter.Level1.prototype.play = function () {
     //window.addEventListener('mouseup', function (e) {
     //    testShip.shooting = false;
     //});
-    window.addEventListener('keyup', function (e) {
-        if (e.key == null) {
-            return;
-        }
-        if (e.key == 'm') {
-            soundMuteUnmute();
-        }
-        if (e.key == '+') {
-            soundIncreaseVolume();
-        }
-        if (e.key == '-') {
-            soundDecreaseVolume();
-        }
-    });
+    //window.addEventListener('keyup', function (e) {
+    //    if (e.key == null) {
+    //        return;
+    //    }
+    //    if (e.key == 'm') {
+    //        soundMuteUnmute();
+    //    }
+    //    if (e.key == '+') {
+    //        soundIncreaseVolume();
+    //    }
+    //    if (e.key == '-') {
+    //        soundDecreaseVolume();
+    //    }
+    //});
     document.getElementById('sound-mute').addEventListener('click', function(e) {
         soundMuteUnmute();
     }, false);

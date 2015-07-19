@@ -9,6 +9,6 @@ Een Simple 2D shoot'em up spaceshooter with Couchfriends multiplayer.
 ## Play game
 Play the game at [http://couchfriends.com/games/5](http://couchfriends.com/games/5)
 
-### Thanks to:
-http://millionthvector.blogspot.nl/p/free-sprites.html
-http://www.freesound.org/people/fins/
+### Special thanks
+* http://millionthvector.blogspot.nl/p/free-sprites.html
+* http://www.freesound.org/people/fins/

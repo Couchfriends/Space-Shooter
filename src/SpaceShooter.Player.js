@@ -52,7 +52,6 @@ SpaceShooter.Bullet.prototype.reset = function () {
         x: 0,
         y: 0
     };
-    this.radius = 5;
     this.object.visible = false;
     this.object.position.x = 0;
     this.object.position.y = 0;
@@ -98,7 +97,6 @@ SpaceShooter.Bullet.prototype.collision = function (target) {
     this.reset();
 };
 
-
 SpaceShooter.BulletEnemy = function (color) {
 
     SpaceShooter.Bullet.call( this, color );
@@ -129,6 +127,31 @@ SpaceShooter.BulletEnemy.prototype.shoot = function (x, y) {
         this.object.position.y = y;
     }
 };
+
+SpaceShooter.BulletEnemyBig = function (color) {
+
+    SpaceShooter.BulletEnemy.call( this, color );
+
+    this.collisionList = [
+        'ship'
+    ];
+
+    this.properties = {
+        speed: {
+            x: 0,
+            y: -30
+        }
+    };
+
+    this.radius = 10;
+    this.stats = {
+        damage: 5
+    };
+
+};
+SpaceShooter.BulletEnemyBig.prototype = Object.create( SpaceShooter.BulletEnemy.prototype );
+
+SpaceShooter.BulletEnemyBig.prototype.constructor = SpaceShooter.BulletEnemyBig;
 
 SpaceShooter.Ship = function () {
 
