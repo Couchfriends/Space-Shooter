@@ -113,8 +113,8 @@ COUCHFRIENDS.on('playerOrientation', function (data) {
     for (var i = 0; i < players.length; i++) {
         if (players[i].id == data.id) {
             players[i].ship.setSpeed(
-                (data.x * (players[i].ship.maxSpeed *.6)),
-                (data.y * (players[i].ship.maxSpeed *.6))
+                (data.x * (players[i].ship.maxSpeed *.3)),
+                (data.y * (players[i].ship.maxSpeed *.3))
             );
             return;
         }
