@@ -125,7 +125,7 @@ COUCHFRIENDS.on('playerOrientation', function (data) {
 COUCHFRIENDS.on('playerClickDown', function (data) {
 
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.id) {
+        if (players[i].id == data.playerId) {
             players[i].ship.shooting = true;
             return;
         }
@@ -135,7 +135,7 @@ COUCHFRIENDS.on('playerClickDown', function (data) {
 
 COUCHFRIENDS.on('playerClickUp', function (data) {
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.id) {
+        if (players[i].id == data.playerId) {
             players[i].ship.shooting = false;
             return;
         }
