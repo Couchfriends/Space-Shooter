@@ -145,7 +145,6 @@ COUCHFRIENDS.on('playerClickUp', function (data) {
 
 COUCHFRIENDS.on('buttonDown', function (data) {
 
-    console.log(data);
     for (var i = 0; i < players.length; i++) {
         if (players[i].id == data.playerId) {
             players[i].ship.shooting = true;
@@ -157,7 +156,6 @@ COUCHFRIENDS.on('buttonDown', function (data) {
 
 COUCHFRIENDS.on('buttonUp', function (data) {
 
-    console.log(data);
     for (var i = 0; i < players.length; i++) {
         if (players[i].id == data.playerId) {
             players[i].ship.shooting = false;
