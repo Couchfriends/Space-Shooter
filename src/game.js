@@ -36,8 +36,6 @@ function resetAchievements() {
 resetAchievements();
 
 function init() {
-    COUCHFRIENDS.settings.host = 'ws.couchfriends.com';
-    COUCHFRIENDS.settings.port = '80';
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 800);
     var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 600);
     SpaceShooter.settings.width = w;
@@ -67,38 +65,17 @@ function update(time) {
     renderer.render(stage);
 }
 
-COUCHFRIENDS.on('playerJoined', function (data) {
+COUCHFRIENDS.on('player.join', function (data) {
     var playerShip = new SpaceShooter.Ship();
     playerShip.init();
     playerShip.add();
     var player = {
-        id: data.id,
+        id: data.peer,
         ship: playerShip,
         score: 0
     };
     playerShip.playerId = data.id;
     players.push(player);
-
-    var jsonData = {
-        topic: 'player',
-        action: 'identify',
-        data: {
-            id: data.id,
-            color: playerShip.tint.replace('0x', '#')
-        }
-    };
-    COUCHFRIENDS.send(jsonData);
-
-    var jsonData = {
-        topic: 'interface',
-        action: 'buttonAdd',
-        data: {
-            playerId: data.id,
-            color: '#ff0000',
-            id: 'buttonShoot'
-        }
-    };
-    COUCHFRIENDS.send(jsonData);
 
     stage.updateLayersOrder();
 
@@ -107,11 +84,9 @@ COUCHFRIENDS.on('playerJoined', function (data) {
     }
 });
 
-COUCHFRIENDS.on('playerOrientation', function (data) {
-
-    //data.y -= .5;
+COUCHFRIENDS.on('player.orientation', function (data) {
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.id) {
+        if (players[i].id == data.player.id) {
             players[i].ship.setSpeed(
                 (data.x * (players[i].ship.maxSpeed *.3)),
                 (data.y * (players[i].ship.maxSpeed *.3))
@@ -119,13 +94,29 @@ COUCHFRIENDS.on('playerOrientation', function (data) {
             return;
         }
     }
-
 });
 
-COUCHFRIENDS.on('playerClickDown', function (data) {
+COUCHFRIENDS.on('player.identify', function (data) {
+    if (data.color == null) {
+        return;
+    }
+    var color = data.color.replace(/#/, '0x');
+    for (var i = 0; i < players.length; i++) {
+        if (players[i].id == data.player.id) {
+            players[i].color = players[i].ship.tint = players[i].ship.originalTint = players[i].ship.object.tint = color;
+            for (var b = 0; b < players[i].ship.bullets.length; b++) {
+                console.log(players[i].ship.bullets[b]);
+                players[i].ship.bullets[b].color = players[i].ship.bullets[b].object.tint = color;
+            }
+            return;
+        }
+    }
+});
+
+COUCHFRIENDS.on('player.clickDown', function (data) {
 
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.playerId) {
+        if (players[i].id == data.player.id) {
             players[i].ship.shooting = true;
             return;
         }
@@ -133,9 +124,9 @@ COUCHFRIENDS.on('playerClickDown', function (data) {
 
 });
 
-COUCHFRIENDS.on('playerClickUp', function (data) {
+COUCHFRIENDS.on('player.clickUp', function (data) {
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.playerId) {
+        if (players[i].id == data.player.id) {
             players[i].ship.shooting = false;
             return;
         }
@@ -143,10 +134,10 @@ COUCHFRIENDS.on('playerClickUp', function (data) {
 
 });
 
-COUCHFRIENDS.on('buttonDown', function (data) {
+COUCHFRIENDS.on('player.buttonDown', function (data) {
 
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.playerId) {
+        if (players[i].id == data.player.id) {
             players[i].ship.shooting = true;
             return;
         }
@@ -154,10 +145,10 @@ COUCHFRIENDS.on('buttonDown', function (data) {
 
 });
 
-COUCHFRIENDS.on('buttonUp', function (data) {
+COUCHFRIENDS.on('player.buttonUp', function (data) {
 
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.playerId) {
+        if (players[i].id == data.player.id) {
             players[i].ship.shooting = false;
             return;
         }
@@ -165,18 +156,18 @@ COUCHFRIENDS.on('buttonUp', function (data) {
 
 });
 
-COUCHFRIENDS.on('buttonClick', function (data) {
+COUCHFRIENDS.on('player.buttonClick', function (data) {
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.playerId) {
+        if (players[i].id == data.player.id) {
             players[i].ship.shooting = false;
             return;
         }
     }
 });
 
-COUCHFRIENDS.on('playerLeft', function (data) {
+COUCHFRIENDS.on('player.left', function (data) {
     for (var i = 0; i < players.length; i++) {
-        if (players[i].id == data.id) {
+        if (players[i].id == data.player.id) {
             players[i].ship.remove();
             players.splice(i, 1);
             return;
@@ -187,22 +178,21 @@ COUCHFRIENDS.on('playerLeft', function (data) {
     }
 });
 
-COUCHFRIENDS.on('connect', function () {
-    var jsonData = {
-        topic: 'game',
-        action: 'host',
-        data: {
-            sessionKey: 'space-1234'
-        }
-    };
-    COUCHFRIENDS.send(jsonData);
-});
+// COUCHFRIENDS.on('connect', function () {
+//     var jsonData = {
+//         topic: 'game',
+//         action: 'host',
+//         data: {
+//             sessionKey: 'space-1234'
+//         }
+//     };
+//     COUCHFRIENDS.send(jsonData);
+// });
 
 function vibrate(playerId, duration) {
     duration = duration || 200;
     var jsonData = {
-        topic: 'interface',
-        action: 'vibrate',
+        topic: 'interface.vibrate',
         data: {
             playerId: playerId,
             duration: duration
